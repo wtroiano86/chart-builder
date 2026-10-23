@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/DatasetPayload",
+  "$defs": {
+    "DatasetPayload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RowsDataset"
+        },
+        {
+          "$ref": "#/$defs/HierarchyDataset"
+        },
+        {
+          "$ref": "#/$defs/GraphDataset"
+        },
+        {
+          "$ref": "#/$defs/SeriesDataset"
+        }
+      ]
+    },
+    "RowsDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "rows"
+        },
+        "identity": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "snapshot"
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RowDatum"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "identity",
+        "dimensions",
+        "rows"
+      ],
+      "additionalProperties": true
+    },
+    "Dimension": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/DimensionType"
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "type",
+        "nullable"
+      ],
+      "additionalProperties": true
+    },
+    "DimensionType": {
+      "type": "string",
+      "enum": [
+        "string",
+        "boolean",
+        "number",
+        "date",
+        "datetime"
+      ]
+    },
+    "RowDatum": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "categoryKeys": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%3E"
+        },
+        "values": {
+          "$ref": "#/$defs/Record%3Cstring%2CScalar%3E"
+        },
+        "display": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%3E"
+        },
+        "bucket": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bucket"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "values",
+        "display",
+        "bucket"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,string>": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "Record<string,Scalar>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Scalar"
+      }
+    },
+    "Scalar": {
+      "type": [
+        "null",
+        "boolean",
+        "number",
+        "string"
+      ]
+    },
+    "Bucket": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string"
+        },
+        "until": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "partial": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "start",
+        "until",
+        "timezone",
+        "partial"
+      ],
+      "additionalProperties": true
+    },
+    "HierarchyDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "hierarchy"
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HierarchyNode"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "roots"
+      ],
+      "additionalProperties": true
+    },
+    "HierarchyNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HierarchyNode"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "children"
+      ],
+      "additionalProperties": true
+    },
+    "GraphDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "graph"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GraphLink"
+          }
+        },
+        "directed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "nodes",
+        "links",
+        "directed"
+      ],
+      "additionalProperties": true
+    },
+    "GraphNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "attributes": {
+          "$ref": "#/$defs/Record%3Cstring%2CScalar%3E"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "attributes"
+      ],
+      "additionalProperties": true
+    },
+    "GraphLink": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "target",
+        "label",
+        "value"
+      ],
+      "additionalProperties": true
+    },
+    "SeriesDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "series"
+        },
+        "requiredAdapter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/Json"
+              }
+            },
+            "required": [
+              "id",
+              "value"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "projection": {
+          "$ref": "#/$defs/RowsDataset"
+        }
+      },
+      "required": [
+        "kind",
+        "requiredAdapter",
+        "items",
+        "projection"
+      ],
+      "additionalProperties": true
+    },
+    "Json": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Json"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Json"
+          }
+        }
+      ]
+    }
+  }
+}

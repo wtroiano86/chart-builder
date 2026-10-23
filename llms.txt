@@ -1,0 +1,18 @@
+# Chart Builder
+
+PHP-defined charts for Laravel 13, Inertia and React. PHP package: wtroiano/chart-builder. Public TypeScript contract: @wtroiano/chart-builder-sdk.
+
+- [Installation](docs/consumers/getting-started.md)
+- [Chart definitions](docs/consumers/charts.md)
+- [Datasets](docs/consumers/data.md)
+- [SQL aggregation](docs/consumers/aggregation.md)
+- [React integration](docs/consumers/react.md)
+- [State and errors](docs/consumers/state.md)
+- [Adapter SDK](docs/consumers/adapters.md)
+- [Exports](docs/consumers/exports.md)
+- [Security](docs/consumers/security.md)
+- [Troubleshooting](docs/consumers/troubleshooting.md)
+- [Architecture](docs/architecture.md)
+- [Boost](docs/boost.md)
+- [Development](docs/development/contributing.md)
+- [Testing](docs/development/testing.md)

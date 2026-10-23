@@ -1,0 +1,631 @@
+{
+    "manifestSchemaVersion": 1,
+    "name": "echarts",
+    "apiVersion": 1,
+    "manifestVersion": "1.0.0",
+    "payloadSchemaVersions": [1],
+    "sdkRange": "^0.1.0",
+    "reactRange": "^18.3.1 || ^19.0.0",
+    "engine": {
+        "package": "echarts",
+        "range": "~6.1.0"
+    },
+    "datasetKinds": ["rows", "hierarchy", "graph", "series"],
+    "series": {
+        "line": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "polar"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "bar": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "polar"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "scatter": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "polar", "geo"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "effectScatter": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "polar", "geo"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "pictorialBar": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "polar"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "pie": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["none"],
+            "roles": {
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "funnel": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["none"],
+            "roles": {
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "gauge": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["none"],
+            "roles": {
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "heatmap": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian", "calendar", "matrix", "geo"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                }
+            }
+        },
+        "boxplot": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "min": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "q1": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "median": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "q3": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "max": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                }
+            }
+        },
+        "candlestick": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "open": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "close": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "low": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "high": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                }
+            }
+        },
+        "radar": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["radar"],
+            "roles": {
+                "indicators": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 3,
+                    "maxFields": 64,
+                    "required": true
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "parallel": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["parallel"],
+            "roles": {
+                "dimensions": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 2,
+                    "maxFields": 64,
+                    "required": true
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        },
+        "tree": {
+            "datasetKinds": ["hierarchy"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "treemap": {
+            "datasetKinds": ["hierarchy"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "sunburst": {
+            "datasetKinds": ["hierarchy"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "graph": {
+            "datasetKinds": ["graph"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "sankey": {
+            "datasetKinds": ["graph"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "chord": {
+            "datasetKinds": ["graph"],
+            "coordinates": ["none"],
+            "roles": {}
+        },
+        "map": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["geo"],
+            "roles": {
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                }
+            }
+        },
+        "lines": {
+            "datasetKinds": ["series"],
+            "coordinates": ["geo", "cartesian"],
+            "roles": {}
+        },
+        "themeRiver": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["none"],
+            "roles": {
+                "time": {
+                    "dimensionTypes": ["date", "datetime", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "category": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                }
+            }
+        },
+        "custom": {
+            "datasetKinds": ["rows", "series"],
+            "coordinates": ["cartesian", "polar", "geo", "calendar", "none"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "value": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        }
+    },
+    "mixedSeries": [
+        {
+            "coordinate": "cartesian",
+            "types": [
+                "line",
+                "bar",
+                "scatter",
+                "effectScatter",
+                "pictorialBar",
+                "heatmap",
+                "boxplot",
+                "candlestick",
+                "custom"
+            ]
+        },
+        {
+            "coordinate": "polar",
+            "types": ["line", "bar", "scatter", "effectScatter", "custom"]
+        },
+        {
+            "coordinate": "none",
+            "types": [
+                "pie",
+                "funnel",
+                "gauge",
+                "tree",
+                "treemap",
+                "sunburst",
+                "graph",
+                "sankey",
+                "chord",
+                "themeRiver",
+                "custom"
+            ]
+        }
+    ],
+    "features": {
+        "axis.log": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "series.stack": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "series.area": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "series.step": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "series.smooth": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "interaction.point-activate": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "interaction.series-visibility": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "interaction.viewport-change": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        },
+        "format.custom": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        }
+    },
+    "renderingModes": ["canvas", "svg"],
+    "exports": [
+        {
+            "format": "png",
+            "modes": ["canvas"]
+        },
+        {
+            "format": "svg",
+            "modes": ["svg"]
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+import { Chart } from '@/vendor/chart-builder';
+import type { ChartResult } from '@wtroiano/chart-builder-sdk';
+
+export default function ChartPage({ chart }: { chart?: ChartResult }) {
+    return <Chart name="chart" result={chart} propName="chart" />;
+}

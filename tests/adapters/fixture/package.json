@@ -1,0 +1,13 @@
+{
+    "name": "@wtroiano/chart-builder-fixture",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "peerDependencies": {
+        "@wtroiano/chart-builder-sdk": "^0.1.0",
+        "react": "^18.3.1 || ^19.0.0"
+    }
+}

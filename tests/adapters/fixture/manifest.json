@@ -1,0 +1,70 @@
+{
+    "manifestSchemaVersion": 1,
+    "name": "fixture",
+    "apiVersion": 1,
+    "manifestVersion": "1.0.0",
+    "payloadSchemaVersions": [1],
+    "sdkRange": "^0.1.0",
+    "reactRange": "^18.3.1 || ^19.0.0",
+    "engine": {
+        "package": "@wtroiano/chart-builder-fixture",
+        "range": "1.0.0"
+    },
+    "datasetKinds": ["rows"],
+    "series": {
+        "line": {
+            "datasetKinds": ["rows"],
+            "coordinates": ["cartesian"],
+            "roles": {
+                "x": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "y": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": true
+                },
+                "size": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "label": {
+                    "dimensionTypes": ["string", "number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "angle": {
+                    "dimensionTypes": ["string", "number", "date", "datetime"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                },
+                "radius": {
+                    "dimensionTypes": ["number"],
+                    "minFields": 1,
+                    "maxFields": 1,
+                    "required": false
+                }
+            }
+        }
+    },
+    "mixedSeries": [],
+    "features": {
+        "interaction.point-activate": {
+            "scopes": ["chart", "series"],
+            "optionsSchema": {
+                "type": "object",
+                "additionalProperties": false
+            }
+        }
+    },
+    "renderingModes": ["svg"],
+    "exports": []
+}

@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Wtroiano\ChartBuilder\Chart;
+use Wtroiano\ChartBuilder\ChartBuilder;
+use Wtroiano\ChartBuilder\Datasets\Dataset;
+use Wtroiano\ChartBuilder\Series\LineSeries;
+
+final class {{ class }} extends Chart
+{
+    public function definition(): ChartBuilder
+    {
+        return ChartBuilder::make('{{ class }}')
+            ->title('{{ class }}')
+            ->data(Dataset::rows([
+                ['id' => 'one', 'label' => 'First', 'value' => 10],
+                ['id' => 'two', 'label' => 'Second', 'value' => 15],
+            ])->key('id'))
+            ->xAxis('label')
+            ->series([LineSeries::make('value')->value('value')]);
+    }
+}

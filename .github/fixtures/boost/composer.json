@@ -1,0 +1,23 @@
+{
+    "name": "chart-builder/boost-smoke-fixture",
+    "require": {
+        "php": "^8.5",
+        "laravel/framework": "^13.0",
+        "laravel/boost": "2.10.3",
+        "wtroiano/chart-builder": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../..",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": false
+    }
+}

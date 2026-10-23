@@ -1,0 +1,1751 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/ChartResult",
+  "$defs": {
+    "ChartResult": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "ready"
+            },
+            "chart": {
+              "$ref": "#/$defs/ChartPayload"
+            },
+            "schemaVersion": {
+              "type": "number",
+              "const": 1
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "contextKey": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "chart",
+            "contextKey",
+            "name",
+            "requestId",
+            "schemaVersion",
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "invalid"
+            },
+            "errors": {
+              "$ref": "#/$defs/Record%3Cstring%2Cstring%5B%5D%3E"
+            },
+            "filters": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FilterDefinition"
+              }
+            },
+            "input": {
+              "$ref": "#/$defs/Record%3Cstring%2CJson%3E"
+            },
+            "schemaVersion": {
+              "type": "number",
+              "const": 1
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "contextKey": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contextKey",
+            "errors",
+            "filters",
+            "input",
+            "name",
+            "requestId",
+            "schemaVersion",
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "error"
+            },
+            "error": {
+              "$ref": "#/$defs/ChartError"
+            },
+            "schemaVersion": {
+              "type": "number",
+              "const": 1
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "contextKey": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contextKey",
+            "error",
+            "name",
+            "requestId",
+            "schemaVersion",
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "denied"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "unauthenticated",
+                "forbidden"
+              ]
+            },
+            "schemaVersion": {
+              "type": "number",
+              "const": 1
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "contextKey": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contextKey",
+            "name",
+            "reason",
+            "requestId",
+            "schemaVersion",
+            "status"
+          ]
+        }
+      ]
+    },
+    "ChartPayload": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "adapter": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "apiVersion": {
+              "type": "number",
+              "const": 1
+            },
+            "manifestVersion": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "apiVersion",
+            "manifestVersion"
+          ],
+          "additionalProperties": true
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "datasets": {
+          "$ref": "#/$defs/Record%3Cstring%2CDatasetPayload%3E"
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SeriesDefinition"
+          }
+        },
+        "axes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AxisDefinition"
+          }
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CoordinateDefinition"
+          }
+        },
+        "formats": {
+          "$ref": "#/$defs/Record%3Cstring%2CFormatDescriptor%3E"
+        },
+        "state": {
+          "$ref": "#/$defs/Record%3Cstring%2CFilterValue%3E"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FilterDefinition"
+          }
+        },
+        "appearance": {
+          "type": "object",
+          "properties": {
+            "theme": {
+              "type": "string",
+              "enum": [
+                "system",
+                "light",
+                "dark"
+              ]
+            },
+            "palette": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "height": {
+              "type": "number"
+            },
+            "legend": {
+              "type": "object",
+              "properties": {
+                "visible": {
+                  "type": "boolean"
+                },
+                "position": {
+                  "type": "string",
+                  "enum": [
+                    "top",
+                    "bottom",
+                    "left",
+                    "right"
+                  ]
+                }
+              },
+              "required": [
+                "visible",
+                "position"
+              ],
+              "additionalProperties": true
+            },
+            "tooltip": {
+              "type": "boolean"
+            },
+            "animation": {
+              "type": "boolean"
+            },
+            "renderingMode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "theme",
+            "palette",
+            "height",
+            "legend",
+            "tooltip",
+            "animation",
+            "renderingMode"
+          ],
+          "additionalProperties": true
+        },
+        "interactions": {
+          "type": "object",
+          "properties": {
+            "navigation": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/NavigationRule"
+              }
+            },
+            "callbacks": {
+              "$ref": "#/$defs/Partial%3CRecord%3CEventType%2Cstring%3E%3E"
+            }
+          },
+          "required": [
+            "navigation",
+            "callbacks"
+          ],
+          "additionalProperties": true
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FeatureRequirement"
+          }
+        },
+        "adapterOptions": {
+          "$ref": "#/$defs/Record%3Cstring%2CJsonObject%3E"
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExtensionReference"
+          }
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "snapshotId": {
+              "type": "string"
+            },
+            "queryNamespace": {
+              "type": "string"
+            },
+            "resolvedAt": {
+              "type": "string"
+            },
+            "locale": {
+              "type": "string"
+            },
+            "timezone": {
+              "type": "string"
+            },
+            "range": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "until": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "until"
+                  ],
+                  "additionalProperties": true
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "snapshotId",
+            "queryNamespace",
+            "resolvedAt",
+            "locale",
+            "timezone",
+            "range"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "name",
+        "adapter",
+        "title",
+        "description",
+        "datasets",
+        "series",
+        "axes",
+        "coordinates",
+        "formats",
+        "state",
+        "filters",
+        "appearance",
+        "interactions",
+        "requirements",
+        "adapterOptions",
+        "extensions",
+        "meta"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,DatasetPayload>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/DatasetPayload"
+      }
+    },
+    "DatasetPayload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RowsDataset"
+        },
+        {
+          "$ref": "#/$defs/HierarchyDataset"
+        },
+        {
+          "$ref": "#/$defs/GraphDataset"
+        },
+        {
+          "$ref": "#/$defs/SeriesDataset"
+        }
+      ]
+    },
+    "RowsDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "rows"
+        },
+        "identity": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "snapshot"
+          ]
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RowDatum"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "identity",
+        "dimensions",
+        "rows"
+      ],
+      "additionalProperties": true
+    },
+    "Dimension": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/DimensionType"
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "type",
+        "nullable"
+      ],
+      "additionalProperties": true
+    },
+    "DimensionType": {
+      "type": "string",
+      "enum": [
+        "string",
+        "boolean",
+        "number",
+        "date",
+        "datetime"
+      ]
+    },
+    "RowDatum": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "categoryKeys": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%3E"
+        },
+        "values": {
+          "$ref": "#/$defs/Record%3Cstring%2CScalar%3E"
+        },
+        "display": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%3E"
+        },
+        "bucket": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bucket"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "values",
+        "display",
+        "bucket"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,string>": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "Record<string,Scalar>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Scalar"
+      }
+    },
+    "Scalar": {
+      "type": [
+        "null",
+        "boolean",
+        "number",
+        "string"
+      ]
+    },
+    "Bucket": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string"
+        },
+        "until": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "partial": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "start",
+        "until",
+        "timezone",
+        "partial"
+      ],
+      "additionalProperties": true
+    },
+    "HierarchyDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "hierarchy"
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HierarchyNode"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "roots"
+      ],
+      "additionalProperties": true
+    },
+    "HierarchyNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HierarchyNode"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "children"
+      ],
+      "additionalProperties": true
+    },
+    "GraphDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "graph"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GraphLink"
+          }
+        },
+        "directed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "nodes",
+        "links",
+        "directed"
+      ],
+      "additionalProperties": true
+    },
+    "GraphNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "attributes": {
+          "$ref": "#/$defs/Record%3Cstring%2CScalar%3E"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "attributes"
+      ],
+      "additionalProperties": true
+    },
+    "GraphLink": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "target",
+        "label",
+        "value"
+      ],
+      "additionalProperties": true
+    },
+    "SeriesDataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "series"
+        },
+        "requiredAdapter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/Json"
+              }
+            },
+            "required": [
+              "id",
+              "value"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "projection": {
+          "$ref": "#/$defs/RowsDataset"
+        }
+      },
+      "required": [
+        "kind",
+        "requiredAdapter",
+        "items",
+        "projection"
+      ],
+      "additionalProperties": true
+    },
+    "Json": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Json"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Json"
+          }
+        }
+      ]
+    },
+    "SeriesDefinition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "datasetId": {
+          "type": "string"
+        },
+        "coordinateId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "axes": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%3E"
+        },
+        "encode": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstring%5B%5D%3E"
+        },
+        "itemIds": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formatId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requiredAdapter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rendererName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "presentation": {
+          "type": "object",
+          "properties": {
+            "color": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stack": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "orientation": {
+              "type": "string",
+              "enum": [
+                "vertical",
+                "horizontal"
+              ]
+            },
+            "area": {
+              "type": "boolean"
+            },
+            "step": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "start",
+                "middle",
+                "end",
+                null
+              ]
+            },
+            "smooth": {
+              "type": "boolean"
+            },
+            "radius": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "symbolSize": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "color",
+            "stack",
+            "orientation",
+            "area",
+            "step",
+            "smooth",
+            "radius",
+            "symbolSize"
+          ],
+          "additionalProperties": true
+        },
+        "adapterOptions": {
+          "$ref": "#/$defs/Record%3Cstring%2CJsonObject%3E"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "type",
+        "datasetId",
+        "coordinateId",
+        "axes",
+        "encode",
+        "itemIds",
+        "formatId",
+        "requiredAdapter",
+        "rendererName",
+        "presentation",
+        "adapterOptions"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,string[]>": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "Record<string,JsonObject>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonObject"
+      }
+    },
+    "JsonObject": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Json"
+      }
+    },
+    "AxisDefinition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "coordinateId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "category",
+            "value",
+            "time",
+            "log"
+          ]
+        },
+        "position": {
+          "type": "string",
+          "enum": [
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "angle",
+            "radius",
+            "parallel"
+          ]
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "domain": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "max": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "categories": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "min",
+            "max",
+            "categories"
+          ],
+          "additionalProperties": true
+        },
+        "logBase": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "formatId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "coordinateId",
+        "kind",
+        "position",
+        "title",
+        "domain",
+        "logBase",
+        "formatId"
+      ],
+      "additionalProperties": true
+    },
+    "CoordinateDefinition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cartesian"
+            },
+            "bounds": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "bounds",
+            "id",
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "polar"
+            },
+            "center": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "radius": {
+              "type": "number"
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "center",
+            "id",
+            "kind",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "radar"
+            },
+            "indicators": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label",
+                  "min",
+                  "max"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "indicators",
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "geo"
+            },
+            "asset": {
+              "type": "string"
+            },
+            "projection": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset",
+            "id",
+            "kind",
+            "projection"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "calendar"
+            },
+            "from": {
+              "type": "string"
+            },
+            "until": {
+              "type": "string"
+            },
+            "weekStartsOn": {
+              "type": "number"
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "id",
+            "kind",
+            "until",
+            "weekStartsOn"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "matrix"
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "columns",
+            "id",
+            "kind",
+            "rows"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "parallel"
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Record<string,FormatDescriptor>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/FormatDescriptor"
+      }
+    },
+    "FormatDescriptor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "number"
+            },
+            "decimals": {
+              "type": "number"
+            },
+            "compact": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "decimals",
+            "compact"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "currency"
+            },
+            "currency": {
+              "type": "string"
+            },
+            "decimals": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "currency",
+            "decimals"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "input": {
+              "type": "string",
+              "enum": [
+                "ratio",
+                "whole"
+              ]
+            },
+            "decimals": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "input",
+            "decimals"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "date"
+            },
+            "dateStyle": {
+              "type": "string",
+              "enum": [
+                "short",
+                "medium",
+                "long"
+              ]
+            },
+            "timeStyle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "short",
+                "medium",
+                null
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "dateStyle",
+            "timeStyle"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "custom"
+            },
+            "name": {
+              "type": "string"
+            },
+            "params": {
+              "$ref": "#/$defs/JsonObject"
+            }
+          },
+          "required": [
+            "kind",
+            "name",
+            "params"
+          ],
+          "additionalProperties": true
+        }
+      ]
+    },
+    "Record<string,FilterValue>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/FilterValue"
+      }
+    },
+    "FilterValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "FilterDefinition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "date-range"
+            },
+            "key": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "fromKey": {
+              "type": "string"
+            },
+            "untilKey": {
+              "type": "string"
+            },
+            "clearable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "key",
+            "label",
+            "fromKey",
+            "untilKey",
+            "clearable"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "interval",
+                "select",
+                "multiselect"
+              ]
+            },
+            "key": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value",
+                  "label"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "clearable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "key",
+            "label",
+            "options",
+            "clearable"
+          ],
+          "additionalProperties": true
+        }
+      ]
+    },
+    "NavigationRule": {
+      "type": "object",
+      "properties": {
+        "seriesId": {
+          "type": "string"
+        },
+        "datum": {
+          "$ref": "#/$defs/DatumRef"
+        },
+        "url": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string",
+          "enum": [
+            "_self",
+            "_blank"
+          ]
+        }
+      },
+      "required": [
+        "seriesId",
+        "datum",
+        "url",
+        "target"
+      ],
+      "additionalProperties": true
+    },
+    "DatumRef": {
+      "type": "object",
+      "properties": {
+        "datasetId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "row",
+            "node",
+            "link",
+            "item"
+          ]
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "datasetId",
+        "kind",
+        "id"
+      ],
+      "additionalProperties": true
+    },
+    "Partial<Record<EventType,string>>": {
+      "type": "object",
+      "properties": {
+        "point-activate": {
+          "type": "string"
+        },
+        "series-visibility": {
+          "type": "string"
+        },
+        "viewport-change": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "FeatureRequirement": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "chart"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": true
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "series"
+                },
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "id"
+              ],
+              "additionalProperties": true
+            }
+          ]
+        },
+        "options": {
+          "$ref": "#/$defs/JsonObject"
+        }
+      },
+      "required": [
+        "name",
+        "target",
+        "options"
+      ],
+      "additionalProperties": true
+    },
+    "ExtensionReference": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "formatter",
+            "renderer",
+            "geography"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "requiredAdapter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "params": {
+          "$ref": "#/$defs/JsonObject"
+        }
+      },
+      "required": [
+        "kind",
+        "name",
+        "requiredAdapter",
+        "params"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,Json>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Json"
+      }
+    },
+    "ChartError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ChartErrorCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "referenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "referenceId"
+      ],
+      "additionalProperties": true
+    },
+    "ChartErrorCode": {
+      "type": "string",
+      "enum": [
+        "data_unavailable",
+        "limit_exceeded",
+        "unsupported_feature",
+        "configuration",
+        "internal",
+        "transport",
+        "render_failed"
+      ]
+    }
+  }
+}

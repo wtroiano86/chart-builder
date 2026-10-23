@@ -1,0 +1,45 @@
+{
+    "name": "@wtroiano/chart-builder-sdk",
+    "version": "0.1.0",
+    "description": "Public contracts and validators for Chart Builder adapters.",
+    "type": "module",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wtroiano86/chart-builder.git",
+        "directory": "packages/sdk"
+    },
+    "homepage": "https://github.com/wtroiano86/chart-builder#readme",
+    "bugs": {
+        "url": "https://github.com/wtroiano86/chart-builder/issues"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./schemas/*": "./schemas/*"
+    },
+    "files": [
+        "dist",
+        "schemas",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc -p tsconfig.json"
+    },
+    "peerDependencies": {
+        "react": "^18.3.1 || ^19.0.0"
+    },
+    "dependencies": {
+        "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1"
+    }
+}

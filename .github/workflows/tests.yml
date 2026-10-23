@@ -1,0 +1,168 @@
+name: Package checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  installation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, zip, sqlite3
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: sh .github/scripts/test-install.sh
+
+  boost:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, zip, gd, sqlite3
+          coverage: none
+          tools: composer:v2
+      - run: composer install --working-dir=.github/fixtures/boost --prefer-dist --no-interaction --no-scripts
+      - run: php .github/scripts/test-boost.php .github/fixtures/boost
+
+  react:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: [current, react18-inertia2, react19-inertia2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, zip, sqlite3
+          coverage: none
+          tools: composer:v2
+      - run: composer install --prefer-dist --no-interaction
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Test React 18 with Inertia 2
+        if: matrix.stack == 'react18-inertia2'
+        run: npm install --no-save --package-lock=false @inertiajs/react@2.3.29 react@18.3.1 react-dom@18.3.1 @types/react@18 @types/react-dom@18
+      - name: Test React 19 with Inertia 2
+        if: matrix.stack == 'react19-inertia2'
+        run: npm install --no-save --package-lock=false @inertiajs/react@2.3.29
+      - run: npm run check:schema
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:package
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: react-browser-${{ matrix.stack }}
+          path: tmp/browser-results
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dependencies: [highest, lowest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, zip, gd, sqlite3
+          coverage: xdebug
+          tools: composer:v2
+      - run: composer validate --strict
+      - name: Install highest dependencies
+        if: matrix.dependencies == 'highest'
+        run: composer update --prefer-dist --prefer-stable --no-interaction
+      - name: Install lowest resolvable dependencies
+        if: matrix.dependencies == 'lowest'
+        run: composer update --prefer-dist --prefer-lowest --prefer-stable --no-interaction
+      - run: composer test
+      - run: composer audit --no-dev
+      - run: composer test:docs
+      - run: composer test:distribution
+      - name: Build release archive
+        if: matrix.dependencies == 'highest'
+        run: composer archive --format=zip --dir=tmp/release --file=chart-builder --no-interaction
+      - uses: actions/upload-artifact@v4
+        if: matrix.dependencies == 'highest'
+        with:
+          name: chart-builder-package
+          path: tmp/release/chart-builder.zip
+          if-no-files-found: error
+
+  databases:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - driver: mysql
+            image: mysql:8.4
+            port: 3306
+            username: root
+            healthcheck: mysqladmin ping --host=localhost --password=testing
+          - driver: mysql
+            image: mariadb:11.4
+            port: 3306
+            username: root
+            healthcheck: healthcheck.sh --connect --innodb_initialized
+          - driver: pgsql
+            image: postgres:17
+            port: 5432
+            username: postgres
+            healthcheck: pg_isready --username=postgres --dbname=chart_builder_test
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env:
+          MYSQL_DATABASE: chart_builder_test
+          MYSQL_ROOT_PASSWORD: testing
+          MYSQL_ROOT_HOST: '%'
+          POSTGRES_DB: chart_builder_test
+          POSTGRES_PASSWORD: testing
+        ports:
+          - ${{ matrix.port }}:${{ matrix.port }}
+        options: >-
+          --health-cmd="${{ matrix.healthcheck }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      CHART_TEST_DB_DRIVER: ${{ matrix.driver }}
+      CHART_TEST_DB_PORT: ${{ matrix.port }}
+      CHART_TEST_DB_USERNAME: ${{ matrix.username }}
+      CHART_TEST_DB_PASSWORD: testing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, zip, gd, pdo_mysql, pdo_pgsql
+          coverage: none
+          tools: composer:v2
+      - run: composer install --prefer-dist --no-interaction
+      - run: composer test:unit

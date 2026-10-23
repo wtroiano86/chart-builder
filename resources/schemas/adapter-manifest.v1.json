@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/AdapterManifest",
+  "$defs": {
+    "AdapterManifest": {
+      "type": "object",
+      "properties": {
+        "manifestSchemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "manifestVersion": {
+          "type": "string"
+        },
+        "payloadSchemaVersions": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "sdkRange": {
+          "type": "string"
+        },
+        "reactRange": {
+          "type": "string"
+        },
+        "engine": {
+          "type": "object",
+          "properties": {
+            "package": {
+              "type": "string"
+            },
+            "range": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "package",
+            "range"
+          ],
+          "additionalProperties": true
+        },
+        "datasetKinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DatasetKind"
+          }
+        },
+        "series": {
+          "$ref": "#/$defs/Record%3Cstring%2CSeriesCapability%3E"
+        },
+        "mixedSeries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "coordinate": {
+                "type": "string",
+                "enum": [
+                  "cartesian",
+                  "polar",
+                  "radar",
+                  "geo",
+                  "calendar",
+                  "matrix",
+                  "parallel",
+                  "none"
+                ]
+              },
+              "types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "coordinate",
+              "types"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "features": {
+          "$ref": "#/$defs/Record%3Cstring%2Cstructure-107346182-8403-8509-107346182-8379-8515-107346182-8365-8516-107346182-7916-8629-107346182-0-10312%3E"
+        },
+        "renderingModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "type": "string",
+                "enum": [
+                  "png",
+                  "jpeg",
+                  "svg",
+                  "pdf"
+                ]
+              },
+              "modes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "format",
+              "modes"
+            ],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": [
+        "manifestSchemaVersion",
+        "name",
+        "apiVersion",
+        "manifestVersion",
+        "payloadSchemaVersions",
+        "sdkRange",
+        "reactRange",
+        "engine",
+        "datasetKinds",
+        "series",
+        "mixedSeries",
+        "features",
+        "renderingModes",
+        "exports"
+      ],
+      "additionalProperties": true
+    },
+    "DatasetKind": {
+      "type": "string",
+      "enum": [
+        "rows",
+        "hierarchy",
+        "graph",
+        "series"
+      ]
+    },
+    "Record<string,SeriesCapability>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/SeriesCapability"
+      }
+    },
+    "SeriesCapability": {
+      "type": "object",
+      "properties": {
+        "datasetKinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DatasetKind"
+          }
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "cartesian",
+              "polar",
+              "radar",
+              "geo",
+              "calendar",
+              "matrix",
+              "parallel",
+              "none"
+            ]
+          }
+        },
+        "roles": {
+          "$ref": "#/$defs/Record%3Cstring%2CRoleCapability%3E"
+        }
+      },
+      "required": [
+        "datasetKinds",
+        "coordinates",
+        "roles"
+      ],
+      "additionalProperties": true
+    },
+    "Record<string,RoleCapability>": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/RoleCapability"
+      }
+    },
+    "RoleCapability": {
+      "type": "object",
+      "properties": {
+        "dimensionTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DimensionType"
+          }
+        },
+        "minFields": {
+          "type": "number"
+        },
+        "maxFields": {
+          "type": "number"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "dimensionTypes",
+        "minFields",
+        "maxFields",
+        "required"
+      ],
+      "additionalProperties": true
+    },
+    "DimensionType": {
+      "type": "string",
+      "enum": [
+        "string",
+        "boolean",
+        "number",
+        "date",
+        "datetime"
+      ]
+    },
+    "Record<string,structure-107346182-8403-8509-107346182-8379-8515-107346182-8365-8516-107346182-7916-8629-107346182-0-10312>": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "chart",
+                "series"
+              ]
+            }
+          },
+          "optionsSchema": {
+            "$ref": "#/$defs/JsonObject"
+          }
+        },
+        "required": [
+          "scopes",
+          "optionsSchema"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "JsonObject": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Json"
+      }
+    },
+    "Json": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Json"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Json"
+          }
+        }
+      ]
+    }
+  }
+}

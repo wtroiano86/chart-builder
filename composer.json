@@ -1,0 +1,152 @@
+{
+    "name": "wtroiano/chart-builder",
+    "description": "PHP-defined charts for Laravel, Inertia and React, with pluggable rendering adapters.",
+    "type": "library",
+    "homepage": "https://github.com/wtroiano86/chart-builder",
+    "authors": [
+        {
+            "name": "William Troiano",
+            "homepage": "https://wtroiano.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/wtroiano86/chart-builder/issues",
+        "source": "https://github.com/wtroiano86/chart-builder",
+        "docs": "https://github.com/wtroiano86/chart-builder/blob/main/docs/README.md"
+    },
+    "keywords": [
+        "laravel",
+        "inertia",
+        "react",
+        "charts",
+        "echarts"
+    ],
+    "require": {
+        "illuminate/cache": "^13.0",
+        "illuminate/console": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/support": "^13.0",
+        "illuminate/validation": "^13.0",
+        "opis/json-schema": "^2.6",
+        "php": "^8.5"
+    },
+    "require-dev": {
+        "driftingly/rector-laravel": "^2.6.2",
+        "larastan/larastan": "^3.12.2",
+        "laravel/framework": "^13.0",
+        "laravel/pint": "^1.32.1",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^5.2.1",
+        "pestphp/pest-plugin-type-coverage": "^5.0.2",
+        "phpstan/phpstan": "^2.2.16",
+        "rector/rector": "^2.6.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wtroiano\\ChartBuilder\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Wtroiano\\ChartBuilder\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "Composer\\Config::disableProcessTimeout",
+            "@test:lint @no_additional_args",
+            "@test:types @no_additional_args",
+            "@test:type-coverage @no_additional_args",
+            "@test:coverage"
+        ],
+        "lint": [
+            "@php vendor/bin/rector process",
+            "@php vendor/bin/pint"
+        ],
+        "test:lint": [
+            "@php vendor/bin/pint --test",
+            "@php vendor/bin/rector process --dry-run"
+        ],
+        "test:types": "@php vendor/bin/phpstan analyse --memory-limit=1G",
+        "test:distribution": "sh .github/scripts/test-distribution.sh",
+        "test:docs": "@php .github/scripts/test-documentation.php",
+        "test:release": [
+            "@composer validate --strict",
+            "@composer audit --no-dev",
+            "@test",
+            "@test:docs",
+            "@test:distribution"
+        ],
+        "test:all": "@test",
+        "test:coverage": "@php -d memory_limit=1G vendor/bin/pest --coverage --exactly=100.0",
+        "test:type-coverage": "@test:unit --type-coverage --min=100",
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "test:unit": "@php -d memory_limit=1G vendor/bin/pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wtroiano\\ChartBuilder\\Providers\\ChartBuilderServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "license": "MIT",
+    "archive": {
+        "exclude": [
+            "**/._*",
+            "**/.DS_Store",
+            "/.github",
+            "/.gitattributes",
+            "/.gitignore",
+            "/.idea",
+            "/.ijfw",
+            "/ijfw",
+            "/AGENTS.md",
+            "/.planning",
+            "/vendor",
+            "/node_modules",
+            "/package.json",
+            "/package-lock.json",
+            "/tsconfig.json",
+            "/vitest.config.ts",
+            "/vite.preview.config.ts",
+            "/playwright.config.ts",
+            "/playwright-report",
+            "/test-results",
+            "/.prettierignore",
+            "/DESIGN.md",
+            "/tests",
+            "/composer.lock",
+            "/phpunit.xml",
+            "/phpstan.neon",
+            "/pint.json",
+            "/rector.php",
+            "/tmp",
+            "/temp",
+            "/.phpstan",
+            "/.phpunit.cache",
+            "/.phpunit.result.cache",
+            "/.php-cs-fixer.cache",
+            "/composer.local.json",
+            "/composer.local.lock",
+            "/.editorconfig",
+            "/packages",
+            "/examples",
+            "/scripts"
+        ]
+    }
+}
