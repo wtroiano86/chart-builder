@@ -49,20 +49,41 @@ final class CapabilityValidator
             $combinations[Value::string($coordinateId ?? 'none')][$type] = true;
             $this->options(Value::map($series['adapterOptions'])[$adapter] ?? [], true);
             if ($resolved) {
-                $datasets = Value::map($chart['datasets']);
-                $dataset = Value::map($datasets[Value::string($series['datasetId'])] ?? []);
-                if (! isset($dataset['kind']) || ! in_array($dataset['kind'], Value::list($capability['datasetKinds']), true) || ! in_array($dataset['kind'], Value::list($manifest['datasetKinds']), true)) {
-                    $this->fail($path.'.datasetId');
-                }
-
-                if (($dataset['requiredAdapter'] ?? null) !== null && $dataset['requiredAdapter'] !== $adapter) {
-                    $this->fail($path.'.datasetId.requiredAdapter');
-                }
-
-                $this->mapping($series, $dataset, $capability, $path);
+                $this->dataset($series, Value::map($chart['datasets']), $capability, $manifest, $adapter, $path);
             }
         }
 
+        $this->mixedSeries($combinations, $coordinates, $manifest);
+        $this->requirements(Value::list($chart['requirements']), $manifest);
+        $this->extensions(Value::list($chart['extensions']), $adapter);
+        $this->options(Value::map($chart['adapterOptions'])[$adapter] ?? [], false);
+    }
+
+    /** @param array<string, mixed> $series
+     * @param  array<string, mixed>  $datasets
+     * @param  array<string, mixed>  $capability
+     * @param  array<string, mixed>  $manifest
+     */
+    private function dataset(array $series, array $datasets, array $capability, array $manifest, string $adapter, string $path): void
+    {
+        $dataset = Value::map($datasets[Value::string($series['datasetId'])] ?? []);
+        if (! isset($dataset['kind']) || ! in_array($dataset['kind'], Value::list($capability['datasetKinds']), true) || ! in_array($dataset['kind'], Value::list($manifest['datasetKinds']), true)) {
+            $this->fail($path.'.datasetId');
+        }
+
+        if (($dataset['requiredAdapter'] ?? null) !== null && $dataset['requiredAdapter'] !== $adapter) {
+            $this->fail($path.'.datasetId.requiredAdapter');
+        }
+
+        $this->mapping($series, $dataset, $capability, $path);
+    }
+
+    /** @param array<string, array<string, true>> $combinations
+     * @param  array<string, mixed>  $coordinates
+     * @param  array<string, mixed>  $manifest
+     */
+    private function mixedSeries(array $combinations, array $coordinates, array $manifest): void
+    {
         foreach ($combinations as $coordinateId => $combination) {
             if (count($combination) < 2) {
                 continue;
@@ -82,8 +103,15 @@ final class CapabilityValidator
             }
         }
 
+    }
+
+    /** @param list<mixed> $requirements
+     * @param  array<string, mixed>  $manifest
+     */
+    private function requirements(array $requirements, array $manifest): void
+    {
         $features = Value::map($manifest['features']);
-        foreach (Value::list($chart['requirements']) as $input) {
+        foreach ($requirements as $input) {
             $requirement = Value::map($input);
             $name = Value::string($requirement['name']);
             $feature = Value::map($features[$name] ?? []);
@@ -95,14 +123,18 @@ final class CapabilityValidator
             new SchemaValidator()->against($feature['optionsSchema'], $requirement['options']);
         }
 
-        foreach (Value::list($chart['extensions']) as $input) {
+    }
+
+    /** @param list<mixed> $extensions */
+    private function extensions(array $extensions, string $adapter): void
+    {
+        foreach ($extensions as $input) {
             $extension = Value::map($input);
             if ($extension['requiredAdapter'] !== null && $extension['requiredAdapter'] !== $adapter) {
                 $this->fail('extensions.requiredAdapter');
             }
         }
 
-        $this->options(Value::map($chart['adapterOptions'])[$adapter] ?? [], false);
     }
 
     /** @param array<string, mixed> $series

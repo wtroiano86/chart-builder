@@ -47,10 +47,8 @@ final readonly class ChartResolver
             $envelope['contextKey'] = $this->scopeKey($configuration, $request);
             $data = [...$envelope, 'status' => 'ready', 'chart' => $this->resolveAuthorized($configuration, $request, $envelope['contextKey'])->toArray()];
             $this->budget($configuration)->serialized($data);
-        } catch (AuthenticationException) {
-            $data = [...$envelope, 'status' => 'denied', 'reason' => 'unauthenticated'];
-        } catch (AuthorizationException) {
-            $data = [...$envelope, 'status' => 'denied', 'reason' => 'forbidden'];
+        } catch (AuthenticationException|AuthorizationException $exception) {
+            return $this->denied($envelope, $exception);
         } catch (ValidationException $exception) {
             $data = [...$envelope, 'status' => 'invalid', 'errors' => Json::object($exception->errors()),
                 'filters' => array_map(static fn (Filter $filter): array => $filter->definition(), $configuration->filters),
@@ -73,12 +71,62 @@ final readonly class ChartResolver
     private function resolveAuthorized(ChartConfiguration $configuration, Request $request, string $scopeKey): ChartPayload
     {
         $chart = $configuration->payload;
-        $chart['filters'] = Value::list($chart['filters']);
-        $chart['formats'] = Value::map($chart['formats']);
-        $chart['requirements'] = Value::list($chart['requirements']);
-        $chart['adapter'] = Value::map($chart['adapter']);
-        $chart['interactions'] = Value::map($chart['interactions']);
         $budget = $this->budget($configuration);
+        $state = $this->filters($chart, $configuration, $request);
+        $chart['state'] = Json::object($state);
+        $chart['adapter'] = Value::map($chart['adapter']);
+        $adapter = Value::string(Value::map($chart['adapter'])['name']);
+        $manifest = $this->adapters->get($adapter);
+        $chart['adapter']['manifestVersion'] = $manifest['manifestVersion'];
+        $this->seriesDefinitions($chart, $configuration);
+
+        $budget->check('series', count(Value::list($chart['series'])));
+        new CapabilityValidator()->validate($chart, $manifest, false);
+        $meta = Value::map($chart['meta']);
+        $context = new ChartContext(
+            $request, $state, Value::string($meta['locale']), Value::string($meta['timezone']),
+            CarbonImmutable::now('UTC'), $scopeKey, $budget,
+        );
+        $datasets = [];
+        foreach ($configuration->providers as $id => $provider) {
+            Json::identifier($id);
+            $datasets[$id] = $provider->resolve($context)->data;
+        }
+
+        $chart['datasets'] = Json::object($datasets);
+        $chart['series'] = $this->split($chart, $configuration, $budget);
+        $this->selectAdapterOptions($chart, $adapter);
+        $chart['formats'] = Json::object(Value::map($chart['formats']));
+        $chart['interactions'] = Value::map($chart['interactions']);
+        $chart['interactions']['callbacks'] = Json::object(Value::map($chart['interactions']['callbacks']));
+        $chart['meta'] = [
+            ...$meta,
+            'snapshotId' => (string) Str::uuid(), 'queryNamespace' => 'charts['.Value::string($chart['name']).']',
+            'resolvedAt' => $context->now->toISOString(),
+            'range' => isset($state['from'], $state['until']) ? ['from' => $state['from'], 'until' => $state['until']] : null,
+        ];
+        new PayloadValidator()->validate($chart, $this->budget($configuration));
+        new CapabilityValidator()->validate($chart, $manifest, true);
+
+        return new ChartPayload($chart);
+    }
+
+    /** @param array<string, mixed> $envelope */
+    private function denied(array $envelope, AuthenticationException|AuthorizationException $exception): ChartResult
+    {
+        return new ChartResult([
+            ...$envelope,
+            'status' => 'denied',
+            'reason' => $exception instanceof AuthenticationException ? 'unauthenticated' : 'forbidden',
+        ]);
+    }
+
+    /** @param array<string, mixed> $chart
+     * @return array<string, mixed>
+     */
+    private function filters(array &$chart, ChartConfiguration $configuration, Request $request): array
+    {
+        $chart['filters'] = Value::list($chart['filters']);
         $state = [];
         $filterKeys = [];
         $input = $this->input($configuration, $request);
@@ -93,10 +141,14 @@ final readonly class ChartResolver
             $chart['filters'][] = $filter->definition();
         }
 
-        $chart['state'] = Json::object($state);
-        $adapter = Value::string(Value::map($chart['adapter'])['name']);
-        $manifest = $this->adapters->get($adapter);
-        $chart['adapter']['manifestVersion'] = $manifest['manifestVersion'];
+        return $state;
+    }
+
+    /** @param array<string, mixed> $chart */
+    private function seriesDefinitions(array &$chart, ChartConfiguration $configuration): void
+    {
+        $chart['formats'] = Value::map($chart['formats']);
+        $chart['requirements'] = Value::list($chart['requirements']);
         $chart['series'] = [];
         foreach ($configuration->series as $definition) {
             $series = $definition->definition($configuration->xField);
@@ -125,21 +177,12 @@ final readonly class ChartResolver
             }
         }
 
-        $budget->check('series', count(Value::list($chart['series'])));
-        new CapabilityValidator()->validate($chart, $manifest, false);
-        $meta = Value::map($chart['meta']);
-        $context = new ChartContext(
-            $request, $state, Value::string($meta['locale']), Value::string($meta['timezone']),
-            CarbonImmutable::now('UTC'), $scopeKey, $budget,
-        );
-        $datasets = [];
-        foreach ($configuration->providers as $id => $provider) {
-            Json::identifier($id);
-            $datasets[$id] = $provider->resolve($context)->data;
-        }
+    }
 
-        $chart['datasets'] = Json::object($datasets);
-        $chart['series'] = $this->split($chart, $configuration, $budget);
+    /** @param array<string, mixed> $chart */
+    private function selectAdapterOptions(array &$chart, string $adapter): void
+    {
+        $chart['series'] = array_map(Value::map(...), Value::list($chart['series']));
         $selected = Value::map($chart['adapterOptions']);
         $chart['adapterOptions'] = Json::object(isset($selected[$adapter]) ? [$adapter => $selected[$adapter]] : []);
         foreach ($chart['series'] as &$series) {
@@ -148,19 +191,6 @@ final readonly class ChartResolver
         }
 
         unset($series);
-        $chart['formats'] = Json::object(Value::map($chart['formats']));
-        $chart['interactions'] = Value::map($chart['interactions']);
-        $chart['interactions']['callbacks'] = Json::object(Value::map($chart['interactions']['callbacks']));
-        $chart['meta'] = [
-            ...$meta,
-            'snapshotId' => (string) Str::uuid(), 'queryNamespace' => 'charts['.Value::string($chart['name']).']',
-            'resolvedAt' => $context->now->toISOString(),
-            'range' => isset($state['from'], $state['until']) ? ['from' => $state['from'], 'until' => $state['until']] : null,
-        ];
-        new PayloadValidator()->validate($chart, $this->budget($configuration));
-        new CapabilityValidator()->validate($chart, $manifest, true);
-
-        return new ChartPayload($chart);
     }
 
     private function authorize(ChartConfiguration $configuration, Request $request): void

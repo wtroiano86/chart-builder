@@ -4,7 +4,7 @@ The PHP package and TypeScript SDK share schema version 1. The default rendering
 
 1. `ChartBuilder` snapshots configuration into `Charts\ConfiguredChart`; reusable `Chart` subclasses return a builder.
 2. `Charts\ChartResolver` authorizes, resolves allowlisted filters, checks adapter requirements, builds context, resolves providers, expands split series and validates the full payload.
-3. `Datasets` handles prepared shapes, custom callbacks, optional caching and bounded SQL aggregation. `Aggregation\BucketPlanner` plans timezone boundaries; `Database\AggregationDialect` emits quoted SQL.
+3. `Datasets` handles prepared shapes, custom callbacks, optional caching and bounded SQL aggregation. `Datasets\QueryDataset` configures aggregation and checks expansion budgets. Its internal collaborators, `Aggregation\GroupedQuery` and `Aggregation\QueryResultNormalizer`, handle bounded SQL queries and row normalization respectively. `Aggregation\BucketPlanner` plans timezone boundaries; `Database\AggregationDialect` emits quoted SQL.
 4. `Payloads\ChartResult` contains ready/invalid/error/denied states. `Payloads\ChartPayload` is the strict renderable result.
 5. `packages/sdk` provides engine-independent types, JSON schemas, validation and helpers.
 6. `resources/react/core` owns Inertia coordination, state, filters, accessible data and export framing. `ChartCanvas` owns lazy loading, SSR, size/theme context and the adapter boundary.

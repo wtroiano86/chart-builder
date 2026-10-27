@@ -40,7 +40,10 @@ it('contains provider failures without losing sibling outcomes and denies before
         throw new RuntimeException('secret SQL');
     });
     $denied = revenueChart()->data($provider)->authorize(fn (): bool => false)->build()->result(request())->toArray();
-    expect($denied['status'])->toBe('denied')->and($calls)->toBe(0);
+    expect($denied)->toBe([
+        'schemaVersion' => 1, 'name' => 'revenue', 'requestId' => null, 'contextKey' => '',
+        'status' => 'denied', 'reason' => 'forbidden',
+    ])->and($calls)->toBe(0);
     $failure = revenueChart()->data($provider)->build()->result(request())->toArray();
     expect($failure['status'])->toBe('error')->and($failure['error']['message'])->not->toContain('SQL')->and($calls)->toBe(1);
     expect(revenueChart()->build()->result(request())->toArray()['status'])->toBe('ready');

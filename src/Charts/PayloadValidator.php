@@ -36,6 +36,18 @@ final class PayloadValidator
             $items[$id] = $this->dataset($dataset, $budget);
         }
 
+        $this->axes($axes, $coordinates, $formats);
+        $this->series($series, $datasets, $coordinates, $axes, $formats, $items);
+        $this->requirements(Value::list($chart['requirements']), $series);
+        $this->navigation(Value::list(Value::map($chart['interactions'])['navigation']), $series, $datasets, $items);
+    }
+
+    /** @param array<string, array<string, mixed>> $axes
+     * @param  array<string, array<string, mixed>>  $coordinates
+     * @param  array<string, mixed>  $formats
+     */
+    private function axes(array $axes, array $coordinates, array $formats): void
+    {
         foreach ($axes as $axis) {
             throw_unless(isset($coordinates[Value::string($axis['coordinateId'])]), ChartException::class, 'Axes must reference an existing coordinate.');
 
@@ -45,6 +57,17 @@ final class PayloadValidator
             $this->format($axis['formatId'], $formats);
         }
 
+    }
+
+    /** @param array<string, array<string, mixed>> $series
+     * @param  array<string, mixed>  $datasets
+     * @param  array<string, array<string, mixed>>  $coordinates
+     * @param  array<string, array<string, mixed>>  $axes
+     * @param  array<string, mixed>  $formats
+     * @param  array<string, array<string, true>>  $items
+     */
+    private function series(array $series, array $datasets, array $coordinates, array $axes, array $formats, array $items): void
+    {
         foreach ($series as $value) {
             $datasetId = Value::string($value['datasetId']);
             throw_unless(isset($datasets[$datasetId]), ChartException::class, 'Series reference an unknown dataset.');
@@ -72,12 +95,28 @@ final class PayloadValidator
             }
         }
 
-        foreach (Value::list($chart['requirements']) as $input) {
+    }
+
+    /** @param list<mixed> $requirements
+     * @param  array<string, array<string, mixed>>  $series
+     */
+    private function requirements(array $requirements, array $series): void
+    {
+        foreach ($requirements as $input) {
             $target = Value::map(Value::map($input)['target']);
             throw_if($target['kind'] === 'series' && ! isset($series[Value::string($target['id'])]), ChartException::class, 'Feature target series does not exist.');
         }
 
-        foreach (Value::list(Value::map($chart['interactions'])['navigation']) as $input) {
+    }
+
+    /** @param list<mixed> $rules
+     * @param  array<string, array<string, mixed>>  $series
+     * @param  array<string, mixed>  $datasets
+     * @param  array<string, array<string, true>>  $items
+     */
+    private function navigation(array $rules, array $series, array $datasets, array $items): void
+    {
+        foreach ($rules as $input) {
             $navigation = Value::map($input);
             $datum = Value::map($navigation['datum']);
             $id = Value::string($datum['id']);

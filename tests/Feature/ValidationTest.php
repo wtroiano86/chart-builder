@@ -128,7 +128,10 @@ it('validates semantic references even for normalized custom provider output', f
 
 it('contains duplicate filters and default unauthenticated outcomes', function (): void {
     $request = Request::create('/');
-    expect(revenueChart()->build()->result($request)->toArray()['reason'])->toBe('unauthenticated');
+    expect(revenueChart()->build()->result($request)->toArray())->toBe([
+        'schemaVersion' => 1, 'name' => 'revenue', 'requestId' => null, 'contextKey' => '',
+        'status' => 'denied', 'reason' => 'unauthenticated',
+    ]);
     $result = revenueChart()->filters([Filter::interval()->default('month'), Filter::interval()->default('month')])->build()->result(request())->toArray();
     expect($result['status'])->toBe('error');
     expect(revenueChart()->series([LineSeries::make('revenue')->value('revenue')->splitBy('missing')])->build()->result(request())->toArray()['status'])->toBe('error');

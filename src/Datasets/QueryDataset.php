@@ -10,15 +10,13 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Wtroiano\ChartBuilder\Aggregation\BucketPlanner;
+use Wtroiano\ChartBuilder\Aggregation\GroupedQuery;
 use Wtroiano\ChartBuilder\Aggregation\Measure;
+use Wtroiano\ChartBuilder\Aggregation\QueryResultNormalizer;
 use Wtroiano\ChartBuilder\Contracts\ChartContext;
 use Wtroiano\ChartBuilder\Contracts\DatasetProvider;
 use Wtroiano\ChartBuilder\Database\AggregationDialect;
-use Wtroiano\ChartBuilder\Database\SqlExpression as Expression;
 use Wtroiano\ChartBuilder\Exceptions\ChartException;
-use Wtroiano\ChartBuilder\Support\Json;
-use Wtroiano\ChartBuilder\Support\ResourceBudget;
-use Wtroiano\ChartBuilder\Support\Value;
 
 final class QueryDataset implements DatasetProvider
 {
@@ -245,24 +243,26 @@ final class QueryDataset implements DatasetProvider
         }
 
         $base->reorder();
-        $categories = $this->categoriesFor($base, $context, $dialect);
+        $query = new GroupedQuery($this->groups, $this->measures);
+        $categories = $query->categories($base, $context, $this->domain, $this->top, $this->rank);
         if ($this->fill !== []) {
             $context->budget->expansion(count($buckets) * max(1, count($categories) + (int) $this->other), count($this->groups) + count($this->measures) + 1);
         }
 
         $selected = clone $base;
         if ($this->top !== null) {
-            $this->constrain($selected, $categories, false);
+            $query->constrain($selected, $categories, false);
         }
 
-        $rows = $this->aggregate($selected, $context, $dialect, $buckets);
+        $rows = $query->aggregate($selected, $context, $buckets, $this->dateColumn);
         if ($this->other) {
             $remainder = clone $base;
-            $this->constrain($remainder, $categories, true);
-            $rows = array_merge($rows, $this->aggregate($remainder, $context, $dialect, $buckets, true));
+            $query->constrain($remainder, $categories, true);
+            $rows = array_merge($rows, $query->aggregate($remainder, $context, $buckets, $this->dateColumn, true));
         }
 
-        return $this->normalize($rows, $categories, $buckets, $context);
+        return new QueryResultNormalizer($this->groups, $this->measures, $this->fill, $this->other, $this->scale)
+            ->normalize($rows, $categories, $buckets, $context);
     }
 
     private function timestamp(CarbonImmutable $instant): string
@@ -292,240 +292,5 @@ final class QueryDataset implements DatasetProvider
         foreach (array_keys($this->fill) as $alias) {
             throw_unless(isset($this->measures[$alias]), ChartException::class, 'Missing-data defaults must reference declared measures.');
         }
-    }
-
-    /** @return list<array<string, mixed>> */
-    private function categoriesFor(Builder $base, ChartContext $context, AggregationDialect $dialect): array
-    {
-        if ($this->groups === []) {
-            return [[]];
-        }
-
-        $query = clone $base;
-        $query->select($this->groups)->groupBy(...$this->groups);
-        foreach ($this->groups as $column) {
-            $dialect->column($query, $column);
-        }
-
-        if ($this->top !== null) {
-            $measure = $this->measures[$this->rank ?? ''];
-            $expression = $dialect->measure($query, $measure);
-            $aggregate = explode(' AS ', $expression)[0];
-            $query->addSelect(new Expression($expression))
-                ->orderBy(new Expression('CASE WHEN '.$aggregate.' IS NULL THEN 1 ELSE 0 END'))
-                ->orderByDesc($measure->alias);
-        }
-
-        foreach ($this->groups as $column) {
-            $query->orderBy($column);
-        }
-
-        $query->limit($this->top ?? $context->budget->limit('categories') + 1);
-        $categories = [];
-        foreach ($query->cursor() as $row) {
-            $values = Value::map($row);
-            foreach (array_keys($this->measures) as $alias) {
-                unset($values[$alias]);
-            }
-
-            $categories[Json::identity($values)] = $values;
-            $context->budget->check('categories', count($categories));
-        }
-
-        foreach ($this->domain as $category) {
-            $categories[Json::identity($category)] = $category;
-            $context->budget->check('categories', count($categories));
-        }
-
-        return array_values($categories);
-    }
-
-    /** @param list<array<string, mixed>> $categories */
-    private function constrain(Builder $query, array $categories, bool $exclude): void
-    {
-        if ($categories === []) {
-            if (! $exclude) {
-                $query->whereRaw('1 = 0');
-            }
-
-            return;
-        }
-
-        // CASE yields a non-null membership boolean, so NULL groups survive exclusion.
-        $parts = [];
-        $bindings = [];
-        $dialect = new AggregationDialect;
-        foreach ($categories as $category) {
-            $terms = [];
-            foreach ($this->groups as $column) {
-                $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-                $value = $category[$name];
-                $terms[] = $dialect->column($query, $column).($value === null ? ' IS NULL' : ' = ?');
-                if ($value !== null) {
-                    $bindings[] = $value;
-                }
-            }
-
-            $parts[] = '('.implode(' AND ', $terms).')';
-        }
-
-        $query->whereRaw(new Expression('(CASE WHEN '.implode(' OR ', $parts).' THEN 1 ELSE 0 END) = '.($exclude ? '0' : '1')), $bindings);
-    }
-
-    /** @param list<array{start: string, until: string, timezone: string, partial: bool}> $buckets
-     * @return list<array<string, mixed>>
-     */
-    private function aggregate(Builder $query, ChartContext $context, AggregationDialect $dialect, array $buckets, bool $other = false): array
-    {
-        $query->select([]);
-        if (! $other) {
-            foreach ($this->groups as $column) {
-                $query->addSelect($column)->groupBy($column)->orderBy($column);
-            }
-        }
-
-        if ($this->dateColumn !== null) {
-            $parts = [];
-            $bindings = [];
-            $column = $dialect->column($query, $this->dateColumn);
-            foreach ($buckets as $index => $bucket) {
-                $parts[] = 'WHEN '.$column.' >= ? AND '.$column.' < ? THEN '.$index;
-                $bindings[] = CarbonImmutable::parse($bucket['start'])->format('Y-m-d H:i:s');
-                $bindings[] = CarbonImmutable::parse($bucket['until'])->format('Y-m-d H:i:s');
-            }
-
-            $expression = 'CASE '.implode(' ', $parts).' END';
-            $query->addSelect(new Expression($expression.' AS '.$query->getGrammar()->wrap('__bucket_index')))
-                ->addBinding($bindings, 'select')->groupBy('__bucket_index')->orderBy('__bucket_index');
-        }
-
-        foreach ($this->measures as $measure) {
-            $query->addSelect(new Expression($dialect->measure($query, $measure)));
-        }
-
-        $query->limit($context->budget->remainingItems() + 1);
-        $rows = [];
-        foreach ($query->cursor() as $row) {
-            $context->budget->items();
-            $values = Value::map($row);
-            if ($other) {
-                foreach ($this->groups as $column) {
-                    $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-                    $values[$name] = 'Other';
-                }
-
-                $values['__other'] = true;
-            }
-
-            $context->budget->inspect($values);
-            $rows[] = $values;
-        }
-
-        return $rows;
-    }
-
-    /** @param list<array<string, mixed>> $rows
-     * @param  list<array<string, mixed>>  $categories
-     * @param  list<array{start: string, until: string, timezone: string, partial: bool}>  $buckets
-     */
-    private function normalize(array $rows, array $categories, array $buckets, ChartContext $context): ResolvedDataset
-    {
-        $normalized = [];
-        foreach ($rows as $row) {
-            $bucket = isset($row['__bucket_index']) ? $buckets[(int) Value::number($row['__bucket_index'])] : null;
-            unset($row['__bucket_index']);
-            if ($bucket !== null) {
-                $row['period'] = $bucket['start'];
-                $row['__bucket'] = $bucket;
-            }
-
-            foreach ($this->measures as $measure) {
-                $value = $row[$measure->alias];
-                if (is_string($value)) {
-                    throw_if(preg_match('/^-?\\d+$/D', $value) && abs((float) $value) > 9007199254740991, ChartException::class, 'Integer aggregates exceed JavaScript safe precision.');
-
-                    $display = Value::map($row['__display'] ?? []);
-                    $display[$measure->alias] = $value;
-                    $row['__display'] = $display;
-                }
-
-                $row[$measure->alias] = $value === null ? null : ($this->scale === null ? Value::number($value) : round(Value::number($value), $this->scale));
-            }
-
-            $row['id'] = $this->rowId($row);
-            $normalized[$row['id']] = $row;
-        }
-
-        if ($this->fill !== []) {
-            $fillCategories = $categories;
-            if ($this->other) {
-                $other = ['__other' => true];
-                foreach ($this->groups as $column) {
-                    $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-                    $other[$name] = 'Other';
-                }
-
-                $fillCategories[] = $other;
-            }
-
-            foreach ($buckets as $bucket) {
-                foreach ($fillCategories as $category) {
-                    $row = [...$category, 'period' => $bucket['start'], '__bucket' => $bucket];
-                    foreach ($this->measures as $measure) {
-                        $row[$measure->alias] = $this->fill[$measure->alias] ?? null;
-                    }
-
-                    $row['id'] = $this->rowId($row);
-                    if (! isset($normalized[$row['id']])) {
-                        $context->budget->items();
-                        $context->budget->inspect($row);
-                        $normalized[$row['id']] = $row;
-                    }
-                }
-            }
-        }
-
-        foreach ($this->groups as $column) {
-            $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-            foreach ($normalized as &$row) {
-                $keys = Value::map($row['__categoryKeys'] ?? []);
-                $keys[$name] = Json::identity([$row['__other'] ?? false, $row[$name]]);
-                $row['__categoryKeys'] = $keys;
-                $row[$name] = $row[$name] === null ? null : (string) Value::scalar($row[$name]);
-            }
-
-            unset($row);
-        }
-
-        // Normalize from the converted grouping values and a fresh budget; final chart validation combines all datasets.
-        $prepared = Dataset::rows(array_values($normalized))->key('id');
-        if ($buckets !== []) {
-            $prepared->dimension('period', 'datetime', false);
-        }
-
-        foreach ($this->groups as $column) {
-            $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-            $prepared->dimension($name, 'string');
-        }
-
-        foreach ($this->measures as $measure) {
-            $prepared->dimension($measure->alias, 'number');
-        }
-
-        $fresh = new ChartContext($context->request, $context->state, $context->locale, $context->timezone, $context->now, $context->scopeKey, new ResourceBudget($context->budget->limits));
-
-        return $prepared->resolve($fresh);
-    }
-
-    /** @param array<string, mixed> $row */
-    private function rowId(array $row): string
-    {
-        $identity = [$row['period'] ?? null, $row['__other'] ?? false];
-        foreach ($this->groups as $column) {
-            $name = str_contains($column, '.') ? mb_substr($column, mb_strrpos($column, '.') + 1) : $column;
-            $identity[] = $row[$name];
-        }
-
-        return Json::identity($identity);
     }
 }
