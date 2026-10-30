@@ -1,6 +1,7 @@
 import {
     useEffect,
     useId,
+    useRef,
     useState,
     useSyncExternalStore,
     type ReactNode,
@@ -166,6 +167,14 @@ export function Chart({
         result.contextKey === ready.contextKey
             ? ready.chart
             : null;
+    const exportChart = useRef(chart);
+    exportChart.current = chart;
+    useEffect(() => {
+        exportChart.current = chart;
+        return () => {
+            exportChart.current = null;
+        };
+    }, [chart]);
     const pending = request.pending || (!outcome && !error);
     const stale =
         !!chart &&
@@ -257,20 +266,22 @@ export function Chart({
                                         scale: 1,
                                         background: null,
                                     })
-                                    .then((blob) =>
-                                        download(blob, name + "." + format),
-                                    )
-                                    .catch((error: unknown) =>
-                                        setRenderError({
-                                            code: "render_failed",
-                                            message:
-                                                error instanceof Error
-                                                    ? error.message
-                                                    : "Export failed.",
-                                            retryable: true,
-                                            referenceId: null,
-                                        }),
-                                    );
+                                    .then((blob) => {
+                                        if (exportChart.current === chart)
+                                            download(blob, name + "." + format);
+                                    })
+                                    .catch((error: unknown) => {
+                                        if (exportChart.current === chart)
+                                            setRenderError({
+                                                code: "render_failed",
+                                                message:
+                                                    error instanceof Error
+                                                        ? error.message
+                                                        : "Export failed.",
+                                                retryable: true,
+                                                referenceId: null,
+                                            });
+                                    });
                             }}
                         >
                             Download {format.toUpperCase()}

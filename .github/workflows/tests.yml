@@ -61,7 +61,7 @@ jobs:
       - run: npm ci
       - name: Test React 18 with Inertia 2
         if: matrix.stack == 'react18-inertia2'
-        run: npm install --no-save --package-lock=false @inertiajs/react@2.3.29 react@18.3.1 react-dom@18.3.1 @types/react@18 @types/react-dom@18
+        run: npm install --no-save --package-lock=false @inertiajs/react@2.3.29 react@18.3.1 react-dom@18.3.1 react-is@18.3.1 @types/react@18 @types/react-dom@18
       - name: Test React 19 with Inertia 2
         if: matrix.stack == 'react19-inertia2'
         run: npm install --no-save --package-lock=false @inertiajs/react@2.3.29

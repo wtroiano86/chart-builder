@@ -4,7 +4,7 @@ Use PHP 8.5, Laravel 13, a working Inertia React application, and Node 22 or new
 
 ## Install from this checkout
 
-Until the first Composer/npm release, add a Composer path repository in the consuming application's composer.json. Change the path to this checkout:
+To develop against this checkout or use unreleased changes, add a Composer path repository in the consuming application's composer.json. Change the path to this checkout:
 
 ```json
 {
@@ -42,25 +42,25 @@ Install that tarball in the application's frontend project and add ECharts:
 npm install /absolute/path/to/chart-builder/tmp/wtroiano-chart-builder-sdk-0.1.0.tgz echarts@~6.1.0
 ```
 
-## Install release 0.1.0
+## Install release 0.1.1
 
-After the GitHub tag `v0.1.0` is published, install from its VCS repository:
+Install PHP `0.1.1` from its GitHub VCS repository:
 
 ```sh
 composer config repositories.chart-builder vcs https://github.com/wtroiano86/chart-builder
-composer require wtroiano/chart-builder:^0.1.0
+composer require wtroiano/chart-builder:^0.1.1
 php artisan vendor:publish --tag=chart-builder-react
 ```
 
-Once the SDK is published to npm:
+Install the published SDK release asset (the npm package is not yet published):
 
 ```sh
-npm install @wtroiano/chart-builder-sdk@^0.1.0 echarts@~6.1.0
+npm install https://github.com/wtroiano86/chart-builder/releases/download/v0.1.0/wtroiano-chart-builder-sdk-0.1.0.tgz echarts@~6.1.0
 ```
 
 The SDK tarball supplied with the release can also be installed directly, using `npm install /path/to/wtroiano-chart-builder-sdk-0.1.0.tgz echarts@~6.1.0`. If the Composer package is later registered on Packagist, the custom VCS repository is unnecessary. This repository does not publish packages automatically.
 
-Both packages begin at `0.1.0`; adapter API and payload schema versions remain `1`. Pin compatible `^0.1.0` ranges during initial development and review release notes before moving to another minor version.
+Both packages began at `0.1.0`; adapter API and payload schema versions remain `1`. PHP `0.1.1` adds shadcn while the compatible SDK stays at `0.1.0`. After SDK npm publication, `@wtroiano/chart-builder-sdk@^0.1.0` can replace the tarball URL. Review release notes before moving to another minor version.
 
 Published React sources live under `resources/js/vendor/chart-builder`. If the app does not map `@` to `resources/js`, use relative imports. Keep its installed React and Inertia versions; do not install a second React copy.
 

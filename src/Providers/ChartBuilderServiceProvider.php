@@ -27,9 +27,14 @@ final class ChartBuilderServiceProvider extends ServiceProvider
         $root = dirname(__DIR__, 2);
         $target = resource_path('js/vendor/chart-builder');
         $this->publishes([$root.'/config/chart-builder.php' => config_path('chart-builder.php')], 'chart-builder-config');
-        $this->publishes([$root.'/resources/react' => $target], 'chart-builder-react');
+        $this->publishes([
+            $root.'/resources/react/core' => $target.'/core',
+            $root.'/resources/react/adapters/echarts' => $target.'/adapters/echarts',
+            $root.'/resources/react/index.ts' => $target.'/index.ts',
+        ], 'chart-builder-react');
         $this->publishes([$root.'/resources/react/core' => $target.'/core'], 'chart-builder-react-core');
         $this->publishes([$root.'/resources/react/adapters/echarts' => $target.'/adapters/echarts'], 'chart-builder-echarts');
+        $this->publishes([$root.'/resources/react/adapters/shadcn' => $target.'/adapters/shadcn'], 'chart-builder-shadcn');
         $this->publishes([$root.'/resources/stubs/chart-builder-page.tsx.stub' => resource_path('js/pages/vendor/chart-builder.tsx')], 'chart-builder-react-page');
     }
 }

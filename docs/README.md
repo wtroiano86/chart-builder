@@ -8,6 +8,7 @@ Start with [installation](consumers/getting-started.md), then [chart definitions
 | Measures, time buckets, category ranking, missing data | [Aggregation](consumers/aggregation.md) |
 | Filters, concurrent visits, deferred data, outcomes | [State](consumers/state.md) |
 | ECharts and third-party rendering engines | [Adapters](consumers/adapters.md) |
+| Shadcn/Recharts installation and supported charts | [Shadcn](consumers/shadcn.md) |
 | CSV, images, accessible data | [Exports](consumers/exports.md) |
 | Authorization, tenancy, limits, JSON | [Security](consumers/security.md) |
 | Diagnosing installation and rendering failures | [Troubleshooting](consumers/troubleshooting.md) |

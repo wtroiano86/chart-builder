@@ -42,8 +42,8 @@ final class AdapterRegistry
     /** @return array<string, mixed> */
     public function get(string $name): array
     {
-        if ($name === 'echarts' && ! isset($this->manifests[$name])) {
-            $this->registerFile(dirname(__DIR__, 2).'/resources/manifests/echarts.json');
+        if (in_array($name, ['echarts', 'shadcn'], true) && ! isset($this->manifests[$name])) {
+            $this->registerFile(dirname(__DIR__, 2).'/resources/manifests/'.$name.'.json');
         }
 
         return $this->manifests[$name] ?? throw new ChartException('Adapter '.$name.' is not registered.');

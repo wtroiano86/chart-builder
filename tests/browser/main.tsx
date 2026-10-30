@@ -6,12 +6,18 @@ import {
     registerChartAdapter,
     registerChartExtension,
 } from "../../resources/react";
+import { createShadcnAdapter } from "../../resources/react/adapters/shadcn";
 import { fixtureAdapter } from "@wtroiano/chart-builder-fixture";
 import type { ChartResult } from "@wtroiano/chart-builder-sdk";
+import { ShadcnGallery } from "./ShadcnGallery";
 import { Gallery } from "./Gallery";
 import { Demo } from "../../examples/react/Demo";
 
 registerChartAdapter("fixture", fixtureAdapter);
+registerChartAdapter(
+    "shadcn",
+    createShadcnAdapter(() => import("../adapters/shadcn/chart")),
+);
 registerChartExtension(
     "renderer",
     "example-bar",
@@ -108,7 +114,13 @@ void createInertiaApp({
         document.getElementById("app")?.getAttribute("data-page") ?? "{}",
     ),
     resolve: (name) =>
-        name === "Demo" ? Demo : name === "Gallery" ? Gallery : Dashboard,
+        name === "ShadcnGallery"
+            ? ShadcnGallery
+            : name === "Demo"
+              ? Demo
+              : name === "Gallery"
+                ? Gallery
+                : Dashboard,
     setup({ el, App, props }) {
         createRoot(el).render(
             <StrictMode>

@@ -73,13 +73,17 @@ output(
         },
     ),
 );
-deepStrictEqual(
-    JSON.parse(readFileSync("resources/manifests/echarts.json", "utf8")),
-    JSON.parse(
-        readFileSync("resources/react/adapters/echarts/manifest.json", "utf8"),
-    ),
-    "PHP and JavaScript ECharts manifests differ.",
-);
+for (const adapter of ["echarts", "shadcn"])
+    deepStrictEqual(
+        JSON.parse(readFileSync(`resources/manifests/${adapter}.json`, "utf8")),
+        JSON.parse(
+            readFileSync(
+                `resources/react/adapters/${adapter}/manifest.json`,
+                "utf8",
+            ),
+        ),
+        `PHP and JavaScript ${adapter} manifests differ.`,
+    );
 console.log(
     check
         ? "Generated schemas and adapter manifests match."

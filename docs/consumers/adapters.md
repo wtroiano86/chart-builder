@@ -1,6 +1,6 @@
 # Rendering adapters
 
-The PHP API produces portable, versioned JSON. An adapter translates it into a rendering engine and implements a small React lifecycle. ECharts ships by default; a separately distributed Syncfusion adapter can use the same PHP builders, datasets, authorization, filters and accessible/export frame. This repository does not include Syncfusion or its license.
+The PHP API produces portable, versioned JSON. An adapter translates it into a rendering engine and implements a small React lifecycle. ECharts ships by default; the optional bundled [shadcn adapter](shadcn.md) integrates application-owned Recharts 3 components; a separately distributed Syncfusion adapter can use the same PHP builders, datasets, authorization, filters and accessible/export frame. This repository does not include Syncfusion or its license.
 
 ## Two registrations, one manifest
 

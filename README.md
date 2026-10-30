@@ -23,7 +23,7 @@ The same four charts in dark mode:
 
 </details>
 
-The initial release is `0.1.0`; see the [release notes](CHANGELOG.md). Requires PHP 8.5, Laravel 13, React 18 or 19, and Inertia 2 (React 18/19) or 3 (React 19). The default adapter uses ECharts 6. Package and SDK releases must be published before registry installation; [local installation](docs/consumers/getting-started.md) works from this checkout.
+PHP release `0.1.1` uses the compatible SDK `0.1.0`. See the [release notes](CHANGELOG.md). Requires PHP 8.5, Laravel 13, React 18 or 19, and Inertia 2 (React 18/19) or 3 (React 19). The default adapter uses ECharts 6. An optional [shadcn adapter](docs/consumers/shadcn.md) uses your application’s Recharts 3 chart components. Shadcn is included starting with PHP `0.1.1`. See [installation](docs/consumers/getting-started.md); the SDK is available as a GitHub release tarball until npm publication.
 
 ```php
 use Wtroiano\ChartBuilder\ChartBuilder;
@@ -57,4 +57,4 @@ Charts require an authenticated user by default. Define an authorization callbac
 
 [Getting started](docs/consumers/getting-started.md) · [Documentation](docs/README.md) · [Adapters](docs/consumers/adapters.md) · [Contributing](CONTRIBUTING.md) · [License](LICENSE)
 
-Run `npm run dev` after `composer install` and `npm ci`, then open `http://127.0.0.1:4174/demo` for six live PHP-generated charts. Change filters to rerun SQL aggregation, switch themes, inspect accessible data, or download CSV/SVG. Edit `examples/charts.php` to try your own definitions; the preview reloads on PHP changes. It uses deterministic sample data in an isolated in-memory SQLite database. The 36-example renderer gallery is at `/gallery`, and transport test scenarios are at `/charts`.
+Run `npm run dev` after `composer install` and `npm ci`, then open `http://127.0.0.1:4174/demo` for six live PHP-generated charts. Change filters to rerun SQL aggregation, switch themes, inspect accessible data, or download CSV/SVG. Edit `examples/charts.php` to try your own definitions; the preview reloads on PHP changes. It uses deterministic sample data in an isolated in-memory SQLite database. The 36-example renderer gallery is at `/gallery`, the shadcn gallery is at `/shadcn`, and transport test scenarios are at `/charts`.

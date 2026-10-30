@@ -1,8 +1,8 @@
 # Chart Builder Package Specification
 
-Chart Builder gives Laravel applications a fluent PHP API for defining charts, preparing data, and rendering through React and Inertia. Rendering adapters connect a shared chart contract to different charting libraries. ECharts is the included default adapter. SQL aggregation and prepared datasets are equally supported inputs.
+Chart Builder gives Laravel applications a fluent PHP API for defining charts, preparing data, and rendering through React and Inertia. Rendering adapters connect a shared chart contract to different charting libraries. ECharts is the included default adapter. The optional bundled [shadcn adapter](consumers/shadcn.md) supports a smaller row-based subset through application-owned Recharts 3 chart components. SQL aggregation and prepared datasets are equally supported inputs.
 
-Release 0.1.0 specification. A public adapter contract and SDK, ECharts as the included default, broad chart coverage, built-in aggregation, and prepared data support are the implemented direction. Package versions begin at 0.1.0; adapter API and payload schema versions remain 1.
+Specification for the PHP 0.1.x package and SDK 0.1.0. The optional shadcn adapter is introduced in PHP 0.1.1; SDK 0.1.0 remains compatible. A public adapter contract and SDK, ECharts as the included default, broad chart coverage, built-in aggregation, and prepared data support are the implemented direction. Package versions begin at 0.1.0; adapter API and payload schema versions remain 1.
 
 # Package identity and installation
 
@@ -12,23 +12,24 @@ Release 0.1.0 specification. A public adapter contract and SDK, ECharts as the i
 | PHP namespace | `Wtroiano\ChartBuilder` |
 | Runtime | PHP 8.5 and Laravel 13, matching Table Builder |
 | React compatibility | React 18 with Inertia 2; React 19 with Inertia 2 or 3 |
-| Included adapter | ECharts 6, with the supported minor range recorded and tested at release |
+| Bundled adapters | Default ECharts 6 and optional shadcn/Recharts 3, with supported minor ranges recorded and tested at release |
 | Adapter SDK | `@wtroiano/chart-builder-sdk` 0.1.x: public types, JSON Schemas, validators, and shared helpers |
 | Adapter API | Public version 1 contract and capability manifest for independently distributed adapters |
-| Distribution | Composer package containing publishable React sources and the included ECharts adapter, plus an independently versioned npm SDK |
+| Distribution | Composer package containing publishable React sources and bundled adapters, plus an independently versioned SDK |
 | Styling | Scoped CSS, CSS variables, system fonts, light and dark themes |
 | License | MIT for package code; retain upstream notices for distributed dependencies |
 
 The PHP core depends on the relevant Illuminate components. Inertia is supplied by the application and is optional for plain JSON use. The shared React core depends on the public SDK and has no chart-engine dependency. The SDK has no Inertia or engine imports; React is a peer dependency with type-only imports in its contracts. The included adapter wraps ECharts directly without an additional React chart wrapper. Table Builder, Metrics, Tailwind, and a UI framework are optional application integrations.
 
 ```bash
-composer require wtroiano/chart-builder
+composer config repositories.chart-builder vcs https://github.com/wtroiano86/chart-builder
+composer require wtroiano/chart-builder:^0.1.1
 php artisan vendor:publish --tag=chart-builder-react
-npm install @wtroiano/chart-builder-sdk@^0.1.0 echarts@~6.1.0
+npm install https://github.com/wtroiano86/chart-builder/releases/download/v0.1.0/wtroiano-chart-builder-sdk-0.1.0.tgz echarts@~6.1.0
 npm run build
 ```
 
-The optional `chart-builder-react-page` tag publishes a standalone page. `make:chart RevenueChart` scaffolds a reusable definition. Published assets live in `resources/js/vendor/chart-builder`; updates preserve application edits unless the application explicitly republishes with force. The default `chart-builder-react` tag publishes the shared core, the ECharts adapter, and a convenience entry point that registers it. `chart-builder-react-core` publishes only the shared sources and their entry point for applications supplying another adapter; `chart-builder-echarts` publishes the ECharts adapter separately. Core-only consumers install the SDK and their chosen adapter and engine dependencies. Publishing UI sources does not copy or fork the SDK contracts.
+The optional `chart-builder-react-page` tag publishes a standalone page. `make:chart RevenueChart` scaffolds a reusable definition. Published assets live in `resources/js/vendor/chart-builder`; updates preserve application edits unless the application explicitly republishes with force. The default `chart-builder-react` tag publishes the shared core, the ECharts adapter, and a convenience entry point that registers it. `chart-builder-react-core` publishes only the shared sources and their entry point for applications supplying another adapter; `chart-builder-echarts` publishes the ECharts adapter separately. `chart-builder-shadcn` publishes the optional shadcn adapter; it is not included in the default publish tag and uses a lazy application component loader. Its supported subset and restrictions are documented in the [shadcn guide](consumers/shadcn.md). Core-only consumers install the SDK and their chosen adapter and engine dependencies. Publishing UI sources does not copy or fork the SDK contracts.
 
 The initial version targets the same stack as Table Builder. Supporting older Laravel or PHP versions requires an additional dependency and CI matrix before those versions are advertised.
 
@@ -116,7 +117,7 @@ An adapter connects the standard chart payload to one charting library. Aggregat
 
 `config/chart-builder.php` sets `adapter` to `echarts` by default. `ChartBuilder::adapter('name')` overrides that default for one chart; the effective name is serialized so PHP and React select the same adapter. Each chart uses one adapter. Different charts on the same page may use different adapters. Adapter selection comes from application configuration or trusted PHP definitions, not an arbitrary request parameter.
 
-The Laravel `AdapterRegistry` loads an `AdapterManifest` from trusted application or package configuration. A manifest declares the adapter name, adapter API version, manifest version, supported payload schema versions, dataset shapes, series and coordinate combinations, feature constraints, rendering modes, and export formats. The included provider registers ECharts automatically. A third-party adapter ships a matching manifest for PHP and JavaScript, registered by a Composer companion provider or the application's service provider.
+The Laravel `AdapterRegistry` loads an `AdapterManifest` from trusted application or package configuration. A manifest declares the adapter name, adapter API version, manifest version, supported payload schema versions, dataset shapes, series and coordinate combinations, feature constraints, rendering modes, and export formats. The bundled ECharts and optional shadcn manifests are loaded automatically; ECharts remains the default. A third-party adapter ships a matching manifest for PHP and JavaScript, registered by a Composer companion provider or the application's service provider.
 
 The React registry is populated at application startup through `registerChartAdapter(name, adapter)`. Registrations use the same names and manifest versions as PHP. Duplicate names are configuration errors. Registering an adapter does not initialize its engine; loading is deferred until selected. Applications supplying only another adapter use the core-only publish tag and entry point. Registration reads the engine-free manifest and validator. The selected adapter's `load()` imports its rendering module on the client; the registry caches that promise, evicts a rejected load before retry, and never initializes an engine during registration or SSR.
 
@@ -414,7 +415,7 @@ Provide semantic titles, descriptions, labeled controls, visible focus, reduced-
 
 Include a keyboard-accessible data view of the resolved dataset. Tabular charts show rows and values; hierarchy and graph charts provide node and edge views. Point navigation needs an equivalent accessible link in that view. Custom chart registrations must provide a meaningful text or table alternative. Toolbar and data view must work at 320 pixels wide.
 
-The core owns CSV export of resolved tabular data, including escaping spreadsheet formula-like text. Hierarchy and graph exports use a documented flattening or explicit application mapping. Image export is an adapter capability: the included ECharts adapter supplies PNG with Canvas and SVG with SVG rendering. The toolbar offers the selected adapter's available export formats and rendering-mode combinations. Explicitly requested unsupported formats produce a capability error. Full-dataset exports, queued reports, and server-rendered images are outside 1.0.
+The core owns CSV export of resolved tabular data, including escaping spreadsheet formula-like text. Hierarchy and graph exports use a documented flattening or explicit application mapping. Image export is an adapter capability: the included ECharts adapter supplies PNG with Canvas and SVG with SVG rendering. The optional shadcn adapter supplies SVG and PNG from SVG rendering, with resolved styles, legend text/swatches and bounded raster dimensions. The toolbar offers the selected adapter's available export formats and rendering-mode combinations. Explicitly requested unsupported formats produce a capability error. Full-dataset exports, queued reports, and server-rendered images are outside 1.0.
 
 # Authorization limits and caching
 

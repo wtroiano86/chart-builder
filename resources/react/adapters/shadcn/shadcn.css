@@ -1,0 +1,8 @@
+.cb-shadcn .cb-shadcn-legend {
+    flex-wrap: wrap;
+}
+.cb-shadcn .cb-shadcn-legend-vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-block: 0;
+}

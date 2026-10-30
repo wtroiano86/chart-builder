@@ -1,0 +1,163 @@
+{
+    "schemaVersion": 1,
+    "name": "revenue",
+    "requestId": null,
+    "contextKey": "scope-fixture",
+    "status": "ready",
+    "chart": {
+        "schemaVersion": 1,
+        "name": "revenue",
+        "adapter": {
+            "name": "shadcn",
+            "apiVersion": 1,
+            "manifestVersion": "1.1.0"
+        },
+        "title": "Revenue",
+        "description": null,
+        "datasets": {
+            "default": {
+                "kind": "rows",
+                "identity": "stable",
+                "dimensions": [
+                    {
+                        "key": "month",
+                        "label": "month",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    {
+                        "key": "revenue",
+                        "label": "revenue",
+                        "type": "number",
+                        "nullable": true
+                    }
+                ],
+                "rows": [
+                    {
+                        "id": "jan",
+                        "values": {
+                            "month": "Jan",
+                            "revenue": 12500
+                        },
+                        "display": {},
+                        "bucket": null
+                    },
+                    {
+                        "id": "feb",
+                        "values": {
+                            "month": "Feb",
+                            "revenue": 14800
+                        },
+                        "display": {},
+                        "bucket": null
+                    }
+                ]
+            }
+        },
+        "series": [
+            {
+                "id": "revenue",
+                "label": "revenue",
+                "type": "line",
+                "datasetId": "default",
+                "coordinateId": "main",
+                "axes": {
+                    "x": "x",
+                    "y": "y"
+                },
+                "encode": {
+                    "y": ["revenue"],
+                    "x": ["month"]
+                },
+                "itemIds": null,
+                "formatId": "revenue-format",
+                "requiredAdapter": null,
+                "rendererName": null,
+                "presentation": {
+                    "color": null,
+                    "stack": null,
+                    "orientation": "vertical",
+                    "area": false,
+                    "step": null,
+                    "smooth": false,
+                    "radius": null,
+                    "symbolSize": null
+                },
+                "adapterOptions": {}
+            }
+        ],
+        "axes": [
+            {
+                "id": "x",
+                "coordinateId": "main",
+                "kind": "category",
+                "position": "bottom",
+                "title": null,
+                "domain": {
+                    "min": null,
+                    "max": null,
+                    "categories": null
+                },
+                "logBase": null,
+                "formatId": null
+            },
+            {
+                "id": "y",
+                "coordinateId": "main",
+                "kind": "value",
+                "position": "left",
+                "title": null,
+                "domain": {
+                    "min": null,
+                    "max": null,
+                    "categories": null
+                },
+                "logBase": null,
+                "formatId": null
+            }
+        ],
+        "coordinates": [
+            {
+                "id": "main",
+                "kind": "cartesian",
+                "bounds": [0, 0, 1, 1]
+            }
+        ],
+        "formats": {
+            "revenue-format": {
+                "kind": "currency",
+                "currency": "USD",
+                "decimals": 2
+            }
+        },
+        "state": {},
+        "filters": [],
+        "appearance": {
+            "theme": "system",
+            "palette": ["#2563eb", "#d97706", "#059669", "#9333ea", "#dc2626"],
+            "height": 320,
+            "legend": {
+                "visible": true,
+                "position": "bottom"
+            },
+            "tooltip": true,
+            "animation": true,
+            "renderingMode": null
+        },
+        "interactions": {
+            "navigation": [],
+            "callbacks": {}
+        },
+        "requirements": [],
+        "adapterOptions": {},
+        "extensions": [],
+        "meta": {
+            "locale": "en-US",
+            "timezone": "UTC",
+            "snapshotId": "snapshot-fixture",
+            "queryNamespace": "charts[revenue]",
+            "resolvedAt": "2026-10-23T12:00:00.000000Z",
+            "range": null
+        }
+    }
+}

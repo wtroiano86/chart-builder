@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { cpSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 const consumer = resolve(process.argv[2]);
 const versions = JSON.parse(
@@ -16,6 +16,8 @@ for (const name of [
     "typescript",
     "@vitejs/plugin-react",
     "echarts",
+    "recharts",
+    "react-is",
 ])
     manifest.devDependencies[name] = versions[name];
 const packed = JSON.parse(
@@ -27,14 +29,22 @@ writeFileSync(
     resolve(consumer, "package.json"),
     JSON.stringify(manifest, null, 4) + "\n",
 );
+cpSync(
+    "tests/adapters/shadcn/chart.tsx",
+    resolve(consumer, "resources/js/shadcn-ui.tsx"),
+);
 writeFileSync(
     resolve(consumer, "resources/js/app.tsx"),
     `import { createRoot } from "react-dom/client";
-import { Chart } from "./vendor/chart-builder";
+import { Chart, registerChartAdapter } from "./vendor/chart-builder";
+import { createShadcnAdapter } from "./vendor/chart-builder/adapters/shadcn";
+import shadcnResult from "./shadcn-result.json";
+registerChartAdapter("shadcn", createShadcnAdapter(() => import("./shadcn-ui")));
 import { assertChartResult } from "@wtroiano/chart-builder-sdk";
 import result from "./chart-result.json";
 assertChartResult(result);
-createRoot(document.getElementById("app")!).render(<Chart name="SmokeRevenueChart" propName="chart" result={result} />);
+assertChartResult(shadcnResult);
+createRoot(document.getElementById("app")!).render(<Chart name="SmokeRevenueChart" propName="shadcnChart" result={shadcnResult} />);
 `,
 );
 writeFileSync(

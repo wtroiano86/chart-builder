@@ -56,11 +56,13 @@ test("previews live PHP charts and reruns SQL for chart filters", async ({
             .violations,
     ).toEqual([]);
     await page.setViewportSize({ width: 390, height: 844 });
-    expect(
-        await page.evaluate(
-            () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-    ).toBe(true);
+    await expect
+        .poll(() =>
+            page.evaluate(
+                () => document.documentElement.scrollWidth <= window.innerWidth,
+            ),
+        )
+        .toBe(true);
     expect(errors).toEqual([]);
 });
 

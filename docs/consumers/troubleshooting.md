@@ -13,6 +13,7 @@
 | Export button absent | A live handle and a manifest-supported format/mode are both required |
 | Filter change loses table state | Use one shared coordinator and distinct chart names; avoid bypassing managed filters |
 | Stale data persists | Look at the stale indicator and applied filters; retry the latest intent |
-| Package missing from npm/Composer | Use the local path repository and SDK tarball before first release |
+| Package missing from npm/Composer | Use the GitHub VCS repository and SDK release tarball; use a local path repository for unreleased changes |
+| Shadcn looks unstyled | Compile the chart component’s Tailwind utilities and load its theme tokens; see the [styling guide](shadcn.md#styling-and-the-shadcn-examples) |
 
 When reporting an issue, include a minimal PHP definition, sanitized envelope, adapter/manifest versions, database driver, React/Inertia versions and the reference ID if present. Never include credentials or tenant data. [Testing](../development/testing.md) describes the development gallery and contract server.

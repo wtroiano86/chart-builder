@@ -4,6 +4,8 @@ Every rendered dataset has a shared accessible data table and CSV representation
 
 CSV uses the current resolved snapshot, including when explicitly marked stale. It preserves exact SQL display strings, quotes cells, and prefixes formula-like text to reduce spreadsheet formula execution. Null cells remain empty. The chart frame clears exports when data becomes unavailable or access is denied.
 
-Image buttons require both a manifest capability and a live adapter handle. ECharts supports PNG for canvas and SVG for SVG rendering; it does not advertise JPEG or PDF. Canvas scale must be positive. SVG export supports scale 1. Exports contain the chart image; the surrounding filters, data table and page layout are not included.
+Image buttons require both a manifest capability and a live adapter handle. ECharts supports PNG for canvas and SVG for SVG rendering; it does not advertise JPEG or PDF. The [shadcn adapter](shadcn.md#image-export) supports SVG and PNG from its SVG rendering mode, including resolved styles and legend text/swatches. Canvas scale must be positive. SVG export supports scale 1. Exports contain the chart image; the surrounding filters, data table and page layout are not included.
+
+Pending image downloads are discarded when their chart snapshot, authorization scope or access changes, or when the chart unmounts.
 
 Custom adapters may implement additional formats. An implementation must reject unsupported mode/format combinations rather than return a mislabeled file.

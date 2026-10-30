@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { readFileSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -20,6 +21,18 @@ function contractServer(): Plugin {
     let sequence = 0;
     return {
         name: "chart-contract-server",
+        handleHotUpdate({ file, server }) {
+            if (
+                file.includes("/resources/react/") ||
+                file.includes("/packages/sdk/src/") ||
+                file.includes("/tests/adapters/") ||
+                file.endsWith("/tests/browser/main.tsx")
+            ) {
+                // Registrations run once per page; module replacement would register twice.
+                server.ws.send({ type: "full-reload" });
+                return [];
+            }
+        },
         configureServer(server) {
             const reloadExamples = (path: string) => {
                 if (path.includes("/examples/") && path.endsWith(".php"))
@@ -42,7 +55,11 @@ function contractServer(): Plugin {
                     response.end();
                     return;
                 }
-                if (!["/demo", "/charts", "/gallery"].includes(url.pathname))
+                if (
+                    !["/demo", "/charts", "/gallery", "/shadcn"].includes(
+                        url.pathname,
+                    )
+                )
                     return next();
                 const inertia = !!request.headers["x-inertia"];
                 const only = String(
@@ -174,11 +191,13 @@ function contractServer(): Plugin {
                 }
                 const page = {
                     component:
-                        url.pathname === "/demo"
-                            ? "Demo"
-                            : url.pathname === "/gallery"
-                              ? "Gallery"
-                              : "Dashboard",
+                        url.pathname === "/shadcn"
+                            ? "ShadcnGallery"
+                            : url.pathname === "/demo"
+                              ? "Demo"
+                              : url.pathname === "/gallery"
+                                ? "Gallery"
+                                : "Dashboard",
                     url: url.pathname + url.search,
                     version: "1",
                     props,
@@ -213,7 +232,7 @@ function contractServer(): Plugin {
     };
 }
 export default defineConfig({
-    plugins: [react(), contractServer()],
+    plugins: [react(), tailwindcss(), contractServer()],
     resolve: {
         alias: {
             "@wtroiano/chart-builder-sdk": new URL(

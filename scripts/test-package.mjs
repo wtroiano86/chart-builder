@@ -44,9 +44,24 @@ try {
         )
     )
         throw new Error("SDK archive includes development files.");
-    const development = JSON.parse(
-        readFileSync(resolve(root, "package.json"), "utf8"),
-    ).devDependencies;
+    // Respect npm's installed React/Inertia matrix, including --no-save overrides.
+    const development = Object.fromEntries(
+        Object.keys(
+            JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"))
+                .devDependencies,
+        ).map((name) => [
+            name,
+            JSON.parse(
+                readFileSync(
+                    resolve(root, "node_modules", name, "package.json"),
+                    "utf8",
+                ),
+            ).version,
+        ]),
+    );
+    console.log(
+        `Packed consumer: React ${development.react}, Inertia ${development["@inertiajs/react"]}.`,
+    );
     writeFileSync(
         resolve(consumer, "package.json"),
         JSON.stringify({
@@ -107,7 +122,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
     build: { lib: { entry: "entry.ts", formats: ["es"], fileName: "core" } },
     plugins: [{ name: "no-rendering-engine", generateBundle() {
-        for (const id of this.getModuleIds()) if (/node_modules[\\\\/](echarts|zrender)[\\\\/]/.test(id)) throw new Error("Engine leaked into core bundle: " + id);
+        for (const id of this.getModuleIds()) if (/node_modules[\\\\/](echarts|zrender|recharts)[\\\\/]/.test(id)) throw new Error("Engine leaked into core bundle: " + id);
     } }],
 });
 `,
@@ -127,6 +142,56 @@ export default defineConfig({
     );
     console.log(
         "SDK archive, independent adapter types and engine-free core production bundle passed.",
+    );
+    cpSync(
+        resolve(root, "resources/react/adapters/shadcn"),
+        resolve(consumer, "shadcn"),
+        { recursive: true },
+    );
+    cpSync(
+        resolve(root, "tests/adapters/shadcn/chart.tsx"),
+        resolve(consumer, "chart.tsx"),
+    );
+    writeFileSync(
+        resolve(consumer, "entry.ts"),
+        `
+export * from "./core";
+import { registerChartAdapter } from "./core";
+import { createShadcnAdapter } from "./shadcn";
+registerChartAdapter("shadcn", createShadcnAdapter(() => import("./chart")));
+`,
+    );
+    writeFileSync(
+        resolve(consumer, "vite.config.mjs"),
+        `
+import { defineConfig } from "vite";
+export default defineConfig({
+    build: { lib: { entry: "entry.ts", formats: ["es"], fileName: "shadcn" } },
+    plugins: [{ name: "lazy-shadcn-engine", generateBundle(_, bundle) {
+        const chunks = Object.values(bundle).filter(chunk => chunk.type === "chunk");
+        const hasEngine = chunk => Object.keys(chunk.modules).some(id => /node_modules[\\\\/]recharts[\\\\/]/.test(id));
+        if (chunks.some(chunk => chunk.isEntry && hasEngine(chunk))) throw new Error("Recharts leaked into entry bundle.");
+        if (!chunks.some(chunk => !chunk.isEntry && hasEngine(chunk))) throw new Error("Missing lazy Recharts chunk.");
+        for (const id of this.getModuleIds()) if (/node_modules[\\\\/](echarts|zrender)[\\\\/]/.test(id)) throw new Error("ECharts leaked into shadcn consumer.");
+    } }],
+});
+`,
+    );
+    run(
+        "npm",
+        [
+            "install",
+            "--no-audit",
+            "--no-fund",
+            "recharts@" + development.recharts,
+            "react-is@" + development["react-is"],
+        ],
+        consumer,
+    );
+    run("npx", ["tsc", "--noEmit"], consumer);
+    run("npx", ["vite", "build"], consumer);
+    console.log(
+        "Independent shadcn consumer types, production build and lazy engine boundary passed.",
     );
 } finally {
     rmSync(consumer, { recursive: true, force: true });

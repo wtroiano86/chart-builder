@@ -9,6 +9,7 @@ The PHP package and TypeScript SDK share schema version 1. The default rendering
 5. `packages/sdk` provides engine-independent types, JSON schemas, validation and helpers.
 6. `resources/react/core` owns Inertia coordination, state, filters, accessible data and export framing. `ChartCanvas` owns lazy loading, SSR, size/theme context and the adapter boundary.
 7. `resources/react/adapters/echarts` translates the portable contract and owns ECharts lifecycle/events/exports.
+8. `resources/react/adapters/shadcn` lazily loads Recharts and application-owned shadcn chart components for its declared row-based subset.
 
 The service provider publishes sources and registers fresh chart factories and adapter manifests. It exposes no HTTP endpoints. Applications own routing, authorization policies, facts, provider dependencies and any custom renderer assets.
 

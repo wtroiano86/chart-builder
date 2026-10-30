@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1 — 2026-10-30
+
+- Add the optional shadcn/Recharts 3 adapter with lazy application components, line/area/bar/pie presets, stable point events and a separate publish tag.
+- Add styled SVG and PNG exports, including legends, background selection, bounded raster scaling and disposal cleanup.
+- Discard pending image downloads after authorization, scope, chart or snapshot changes.
+- Add a themed shadcn gallery, supported legend layouts, installation guidance and compatibility checks against the real shadcn components.
+- Allocate unused palette slots before repeating colors and retain identity assignments through filtering and series reordering.
+- Preserve the default ECharts publishing path without requiring Recharts in applications that do not use shadcn.
+
+The PHP package version is `0.1.1`. The unchanged SDK remains `0.1.0` with compatibility range `^0.1.0`; adapter API and payload schema remain `1`. Capability manifests are ECharts `1.0.0` and shadcn `1.1.0`. This release adds no required dependencies for existing ECharts consumers.
+
 ## 0.1.0
 
 Initial development release of `wtroiano/chart-builder` and `@wtroiano/chart-builder-sdk`.

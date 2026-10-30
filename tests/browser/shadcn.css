@@ -1,0 +1,189 @@
+/* Compile the real shadcn fixture's utilities without resetting other demos. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "../adapters/shadcn/chart.tsx";
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-border: var(--border);
+}
+
+.shadcn-gallery {
+    --background: #fff;
+    --foreground: #18181b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --border: #e4e4e7;
+    --chart-1: #2563eb;
+    --chart-2: #0d9488;
+    --chart-3: #d97706;
+    --chart-4: #7c3aed;
+    --chart-5: #e11d48;
+    min-height: 100vh;
+    background: #fafafa;
+    color: var(--foreground);
+    font:
+        14px/1.5 system-ui,
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+.shadcn-gallery.dark {
+    --background: #18181b;
+    --foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --border: #3f3f46;
+    --chart-1: #60a5fa;
+    --chart-2: #2dd4bf;
+    --chart-3: #fbbf24;
+    --chart-4: #a78bfa;
+    --chart-5: #fb7185;
+    background: #09090b;
+    color-scheme: dark;
+}
+.shadcn-gallery * {
+    box-sizing: border-box;
+}
+.shadcn-content {
+    max-width: 1280px;
+    margin: auto;
+    padding: 0 32px 48px;
+}
+.shadcn-header,
+.shadcn-header nav,
+.shadcn-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+.shadcn-header {
+    min-height: 80px;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+}
+.shadcn-header a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+}
+.shadcn-header nav a {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 400;
+}
+.shadcn-header a:hover {
+    text-decoration: underline;
+}
+.shadcn-intro {
+    padding: 40px 0 24px;
+    max-width: 640px;
+}
+.shadcn-intro h1 {
+    margin: 0 0 12px;
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+.shadcn-intro p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 15px;
+}
+.shadcn-controls {
+    gap: 8px;
+    padding-bottom: 24px;
+}
+.shadcn-controls button,
+.shadcn-controls select,
+.shadcn-gallery .cb-toolbar button {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--background);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 10px;
+    min-height: 32px;
+    cursor: pointer;
+}
+.shadcn-controls button:hover,
+.shadcn-controls button[aria-pressed="true"],
+.shadcn-gallery .cb-toolbar button:hover {
+    background: var(--muted);
+}
+.shadcn-controls span {
+    margin-left: auto;
+    color: var(--muted-foreground);
+    font-size: 12px;
+}
+.shadcn-controls label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+}
+.shadcn-gallery :focus-visible {
+    outline: 2px solid var(--chart-1);
+    outline-offset: 3px;
+}
+.shadcn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 24px;
+}
+.shadcn-gallery .cb-chart {
+    --cb-bg: var(--background);
+    --cb-text: var(--foreground);
+    --cb-muted: var(--muted-foreground);
+    --cb-border: var(--border);
+    --cb-accent: var(--chart-1);
+    padding: 24px;
+    box-shadow: 0 1px 3px #00000008;
+}
+.shadcn-gallery .cb-header {
+    display: block;
+    padding-bottom: 16px;
+}
+.shadcn-gallery .cb-toolbar {
+    margin-top: 16px;
+}
+.shadcn-gallery .cb-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    text-transform: capitalize;
+}
+.shadcn-gallery .cb-header p {
+    margin-top: 5px;
+    font-size: 13px;
+}
+.shadcn-gallery .cb-data {
+    font-size: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+}
+.shadcn-gallery .cb-data summary {
+    color: var(--muted-foreground);
+    font-weight: 400;
+}
+@media (max-width: 600px) {
+    .shadcn-content {
+        padding: 0 16px 24px;
+    }
+    .shadcn-gallery .cb-chart {
+        padding: 16px;
+    }
+    .shadcn-controls span {
+        width: 100%;
+        margin-left: 0;
+    }
+}
